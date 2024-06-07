@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true // Set to true due to Jest test command warning about possible issues with imports if false.
+  }
+}
