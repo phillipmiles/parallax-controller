@@ -14,9 +14,9 @@ function parallaxController(scenes) {
   init();
 
   function init() {
-    windowHeight = window.innerHeight;
-    windowWidth = window.innerWidth;
-    scrollTop = window.scrollY;
+    windowHeight = $(window).height();
+    windowWidth = $(window).width();
+    scrollTop = $(window).scrollTop();
 
     convertAllPropsToPx();
 
@@ -40,7 +40,7 @@ function parallaxController(scenes) {
 
   function debugMessages() {
     console.log('===========================');
-    console.log('ScrollTop = ' + window.scrollY);
+    console.log('ScrollTop = ' + $(window).scrollTop());
     console.log('Viewport height ' + windowHeight);
     console.log('Body Height = ' + bodyHeight);
     console.log('Total duration = ' + totalDuration);
@@ -128,7 +128,7 @@ function parallaxController(scenes) {
 
       bodyHeight += scenes[i].duration;
 
-      if (!wrappers.includes(scenes[i].wrapper)) {
+      if ($.inArray(scenes[i].wrapper, wrappers) == -1) {
         wrappers.push(scenes[i].wrapper);
       }
 
@@ -153,12 +153,12 @@ function parallaxController(scenes) {
       }
     }
 
-    document.body.style.height = bodyHeight + windowHeight + 'px';
+    $('body').height(bodyHeight + windowHeight);
 
     setScrollTops();
     currentWrapper = wrappers[0];
 
-    getElementBySelector(currentWrapper).style.display = 'block';
+    $(currentWrapper).show();
   }
 
   function convertPercentToPx(value, relativeTo) {
@@ -176,7 +176,7 @@ function parallaxController(scenes) {
   }
 
   function setScrollTops() {
-    scrollTop = window.scrollY;
+    scrollTop = $(window).scrollTop();
 
     /* No overscroll screwing things up */
     if (scrollTop > totalDuration) {
@@ -235,7 +235,7 @@ function parallaxController(scenes) {
       rotate = getPropValue(animation, 'rotate', 'end');
       opacity = getPropValue(animation, 'opacity', 'end');
 
-      animateSelector(
+      animateElement(
         animation.selector,
         translateX,
         translateY,
@@ -260,7 +260,7 @@ function parallaxController(scenes) {
       rotate = getPropValue(animation, 'rotate', 'start');
       opacity = getPropValue(animation, 'opacity', 'start');
 
-      animateSelector(
+      animateElement(
         animation.selector,
         translateX,
         translateY,
@@ -275,9 +275,8 @@ function parallaxController(scenes) {
     var i;
 
     if (scenes[currentScene].wrapper != currentWrapper) {
-      getElementBySelector(currentWrapper).style.display = 'none';
-      getElementBySelector(scenes[currentScene].wrapper).style.display =
-        'block';
+      $(currentWrapper).hide();
+      $(scenes[currentScene].wrapper).show();
       currentWrapper = scenes[currentScene].wrapper;
     }
   }
@@ -303,14 +302,19 @@ function parallaxController(scenes) {
           rotate = getPropValue(animation, 'rotate', 'end');
           opacity = getPropValue(animation, 'opacity', 'end');
 
-          animateSelector(
-            animation.selector,
-            translateX,
-            translateY,
-            scale,
-            rotate,
-            opacity
-          );
+          $(animation.selector).css({
+            transform:
+              'translate3d(' +
+              translateX +
+              'px, ' +
+              translateY +
+              'px, 0) scale(' +
+              scale +
+              ') rotate(' +
+              rotate +
+              'deg)',
+            opacity: opacity,
+          });
         }
       } else {
         animateElements();
@@ -356,7 +360,12 @@ function parallaxController(scenes) {
       // el.style['transform'] = "translate3d(0px" + ", -" + translateY + "px" + ", 0)";
       // console.log(translateY);
 
-      animateSelector(
+      // $(animation.selector).css({
+      //   'transform': 'translate3d(' + translateX +'px, ' + translateY + 'px, 0) scale('+ scale +') rotate('+ rotate +'deg)',
+      //   'opacity' : opacity
+      // })
+
+      animateElement(
         animation.selector,
         translateX,
         translateY,
@@ -364,25 +373,6 @@ function parallaxController(scenes) {
         rotate,
         opacity
       );
-    }
-  }
-
-  function animateSelector(
-    selector,
-    translateX,
-    translateY,
-    scale,
-    rotate,
-    opacity
-  ) {
-    const fromDom = getElementBySelector(selector);
-
-    if (fromDom.toString() === '[object HTMLCollection]') {
-      for (let element of fromDom) {
-        animateElement(element, translateX, translateY, scale, rotate, opacity);
-      }
-    } else {
-      animateElement(fromDom, translateX, translateY, scale, rotate, opacity);
     }
   }
 
@@ -395,8 +385,19 @@ function parallaxController(scenes) {
     rotate,
     opacity
   ) {
-    element.style.opacity = opacity;
-    element.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+    $(element).css({
+      transform:
+        'translate3d(' +
+        translateX +
+        'px, ' +
+        translateY +
+        'px, 0) scale(' +
+        scale +
+        ') rotate(' +
+        rotate +
+        'deg)',
+      opacity: opacity,
+    });
   }
 
   // Fetches the position value for an animated elements property.
@@ -520,11 +521,3 @@ function parallaxController(scenes) {
 
 // TODO: Make into an NPM module.
 // module.exports = parallaxController;
-
-function getElementBySelector(selector) {
-  if (selector[0] === '#') {
-    return document.getElementById(selector.split('#')[1]);
-  } else if (selector[0] === '.') {
-    return document.getElementsByClassName(selector.split('.')[1]);
-  }
-}
