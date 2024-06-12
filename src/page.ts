@@ -1,19 +1,19 @@
-export const getScrollPos = () => {
-  const scrollPos = window.scrollY;
-  return scrollPos;
-};
+// export const getScrollPos = () => {
+//   const scrollPos = window.scrollY;
+//   return scrollPos;
+// };
 
-export const getRelativeScrollPos = (currentScene, scenes) => {
-  return getScrollPos() - prevScenesDurations;
-};
+// export const getRelativeScrollPos = (currentScene, scenes) => {
+//   return getScrollPos() - prevScenesDurations;
+// };
 
-export const setScrollTops = () => {
-  scrollTop = $(window).scrollTop();
+// export const setScrollTops = () => {
+//   scrollTop = $(window).scrollTop();
 
-  /* No overscroll screwing things up */
-  if (scrollTop > totalDuration) {
-    scrollTop = totalDuration;
-  }
+//   /* No overscroll screwing things up */
+//   if (scrollTop > totalDuration) {
+//     scrollTop = totalDuration;
+//   }
 
-  relativeScrollTop = scrollTop - prevScenesDurations;
-};
+//   relativeScrollTop = scrollTop - prevScenesDurations;
+// };

@@ -9,6 +9,7 @@ function parallaxController(scenes) {
     ticking = false,
     scrollIntervalID = 0,
     prevScenesDurations = 0,
+    relativeScrollTop = 0,
     currentScene = 0;
 
   init();
@@ -61,7 +62,7 @@ function parallaxController(scenes) {
       for (j = 0; j < scenes[i].animations.length; j++) {
         // loop properties
         Object.keys(scenes[i].animations[j]).forEach(function (key) {
-          value = scenes[i].animations[j][key];
+          let value = scenes[i].animations[j][key];
 
           if (key !== 'selector') {
             if (value instanceof Array) {
@@ -137,7 +138,7 @@ function parallaxController(scenes) {
 
         Object.keys(scenes[i].animations[j]).forEach(function (key) {
           // loop properties
-          value = scenes[i].animations[j][key];
+          let value = scenes[i].animations[j][key];
 
           if (
             key !== 'selector' &&
@@ -158,7 +159,15 @@ function parallaxController(scenes) {
     setScrollTops();
     currentWrapper = wrappers[0];
 
-    getElementBySelector(currentWrapper).style.display = 'block';
+    let element;
+
+    if (isStringIdName(currentWrapper)) {
+      element = document.getElementById(currentWrapper.split('#')[1]);
+    } else {
+      throw 'Cant handle classnames here yet';
+    }
+
+    element.style.display = 'block';
   }
 
   function convertPercentToPx(value, relativeTo) {
@@ -275,9 +284,28 @@ function parallaxController(scenes) {
     var i;
 
     if (scenes[currentScene].wrapper != currentWrapper) {
-      getElementBySelector(currentWrapper).style.display = 'none';
-      getElementBySelector(scenes[currentScene].wrapper).style.display =
-        'block';
+      let oldWrapperElement;
+      let currentWrapperElement;
+
+      if (isStringIdName(currentWrapper)) {
+        oldWrapperElement = document.getElementById(
+          currentWrapper.split('#')[1]
+        );
+      } else {
+        throw 'Cant handle classnames here yet';
+      }
+
+      if (isStringIdName(scenes[currentScene].wrapper)) {
+        currentWrapperElement = document.getElementById(
+          currentWrapper.split('#')[1]
+        );
+      } else {
+        throw 'Cant handle classnames here yet';
+      }
+
+      oldWrapperElement.style.display = 'none';
+      currentWrapperElement.style.display = 'block';
+
       currentWrapper = scenes[currentScene].wrapper;
     }
   }
@@ -293,7 +321,7 @@ function parallaxController(scenes) {
     for (var i = 0; i < currentScene; i++) {
       // Run through and set all animated elements to their end positions until we hit the current Scene.
       if (currentScene != i) {
-        for (j = 0; j < scenes[i].animations.length; j++) {
+        for (let j = 0; j < scenes[i].animations.length; j++) {
           var animation, translateY, translateX, scale, rotate, opacity;
 
           animation = scenes[i].animations[j];
@@ -375,13 +403,13 @@ function parallaxController(scenes) {
     rotate,
     opacity
   ) {
-    const fromDom = getElementBySelector(selector);
-
-    if (fromDom.toString() === '[object HTMLCollection]') {
+    if (isStringClassName(selector)) {
+      const fromDom = document.getElementsByClassName(selector.split('.')[1]);
       for (let element of fromDom) {
         animateElement(element, translateX, translateY, scale, rotate, opacity);
       }
     } else {
+      const fromDom = document.getElementById(selector.split('#')[1]);
       animateElement(fromDom, translateX, translateY, scale, rotate, opacity);
     }
   }
@@ -435,6 +463,7 @@ function parallaxController(scenes) {
     var duration = scenes[currentScene].duration;
 
     var startValue;
+    let endValue;
 
     if (value && type === 'ease') {
       if (value instanceof Array === false) {
@@ -528,3 +557,11 @@ function getElementBySelector(selector) {
     return document.getElementsByClassName(selector.split('.')[1]);
   }
 }
+
+const isStringClassName = (string) => {
+  return string[0] === '.' ? true : false;
+};
+
+const isStringIdName = (string) => {
+  return string[0] === '#' ? true : false;
+};

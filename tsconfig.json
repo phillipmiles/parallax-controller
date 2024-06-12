@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "outDir": "build",
     "esModuleInterop": true // Set to true due to Jest test command warning about possible issues with imports if false.
   },
-  "include": ["src/**/*", "js/parallaxController.js"]
+  "include": ["src/**/*", "src/parallaxController.js"]
 }
