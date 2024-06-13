@@ -1,3 +1,4 @@
+import { manageSceneAudio } from './audio';
 import {
   convertScenesPropsToPx,
   convertSceneShorthandProps,
@@ -60,11 +61,8 @@ export const parallaxController = (scenes) => {
   }
 
   function buildPage() {
-    var i, j, k;
-
-    for (i = 0; i < scenes.length; i++) {
-      // loop scenes
-
+    // loop scenes
+    for (let i = 0; i < scenes.length; i++) {
       bodyHeight += scenes[i].duration;
 
       if (!wrappers.includes(scenes[i].wrapper)) {
@@ -111,7 +109,7 @@ export const parallaxController = (scenes) => {
     setScene();
     setScrollTops();
     animateElements();
-    // animateAudio(scenes);
+    scenes.forEach((scene) => manageSceneAudio(scene));
     ticking = false;
   }
 

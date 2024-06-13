@@ -1,15 +1,9 @@
-import { animation } from './animation';
 import {
   calcPercentOfValue,
   calcPercentOfWindowHeight,
   calcPercentOfWindowWidth,
 } from './parallax';
-
-export interface scene {
-  wrapper: string;
-  duration: string;
-  animations: animation[];
-}
+import { animation } from './types';
 
 export const convertAnimationToPx = (animation: animation, duration) => {
   // loop animation properties
