@@ -1,4 +1,6 @@
-function parallaxController(scenes) {
+import { convertScenePropsToPx, getTotalDuration } from './parallax';
+
+export const parallaxController = (scenes) => {
   var windowHeight = 0,
     windowWidth = 0,
     bodyHeight = 0,
@@ -19,7 +21,9 @@ function parallaxController(scenes) {
     windowWidth = window.innerWidth;
     scrollTop = window.scrollY;
 
-    convertAllPropsToPx();
+    // convertAllPropsToPx();
+    convertScenePropsToPx(scenes);
+    totalDuration = getTotalDuration(scenes);
 
     buildPage();
     setPage();
@@ -47,78 +51,6 @@ function parallaxController(scenes) {
     console.log('Total duration = ' + totalDuration);
     console.log('Duration for scene[0] = ' + scenes[0].duration);
     console.log('===========================');
-  }
-
-  function convertAllPropsToPx() {
-    var i, j, k;
-
-    for (i = 0; i < scenes.length; i++) {
-      // loop scenes
-
-      scenes[i].duration = convertPercentToPx(scenes[i].duration, 'y');
-      totalDuration += scenes[i].duration;
-
-      // loop animations
-      for (j = 0; j < scenes[i].animations.length; j++) {
-        // loop properties
-        Object.keys(scenes[i].animations[j]).forEach(function (key) {
-          let value = scenes[i].animations[j][key];
-
-          if (key !== 'selector') {
-            if (value instanceof Array) {
-              // if its an array
-              for (k = 0; k < value.length; k++) {
-                // if value in array is %
-                if (typeof value[k] === 'string') {
-                  if (key === 'translateY') {
-                    value[k] = convertPercentToPx(value[k], 'y');
-                  } else if (key === 'translateX') {
-                    value[k] = convertPercentToPx(value[k], 'x');
-                  }
-                }
-              }
-
-              // If animation property contains keys/positions object.
-            } else if (typeof value === 'object') {
-              for (k = 0; k < value.positions.length; k++) {
-                // Convert positions to pixels.
-                if (typeof value.positions[k] === 'string') {
-                  if (key === 'translateY') {
-                    value.positions[k] = convertPercentToPx(
-                      value.positions[k],
-                      'y'
-                    );
-                  } else if (key === 'translateX') {
-                    value.positions[k] = convertPercentToPx(
-                      value.positions[k],
-                      'x'
-                    );
-                  }
-                }
-
-                // Convert keys to pixels.
-                if (typeof value.keys[k] === 'string') {
-                  value.keys[k] = convertPercentToPx(
-                    value.keys[k],
-                    scenes[i].duration
-                  );
-                }
-              }
-            } else {
-              if (typeof value === 'string') {
-                // if single value is a %
-                if (key === 'translateY') {
-                  value = convertPercentToPx(value, 'y');
-                } else if (key === 'translateX') {
-                  value = convertPercentToPx(value, 'x');
-                }
-              }
-            }
-            scenes[i].animations[j][key] = value;
-          }
-        });
-      }
-    }
   }
 
   function buildPage() {
@@ -196,6 +128,7 @@ function parallaxController(scenes) {
   }
 
   function requestTick() {
+    console.log('dfg', ticking);
     if (!ticking) {
       requestAnimationFrame(updatePage);
     }
@@ -206,6 +139,7 @@ function parallaxController(scenes) {
     setScene();
     setScrollTops();
     animateElements();
+    // animateAudio(scenes);
     ticking = false;
   }
 
@@ -545,7 +479,7 @@ function parallaxController(scenes) {
       console.log('Public stoping');
     },
   };
-}
+};
 
 // TODO: Make into an NPM module.
 // module.exports = parallaxController;

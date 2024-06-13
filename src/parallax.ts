@@ -23,7 +23,7 @@ export const getTotalDuration = (scenes) => {
 
 // Converts all the values in the scenes object to pixels based off of the the
 // height and width of the viewport.
-export const convertAllPropsToPx = (scenes) => {
+export const convertScenePropsToPx = (scenes) => {
   var i, j, k;
 
   for (i = 0; i < scenes.length; i++) {
