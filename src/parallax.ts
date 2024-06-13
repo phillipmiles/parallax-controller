@@ -1,3 +1,4 @@
+import { getDefaultPropertyValue } from './animation';
 import { convertAnimationToPx } from './scenes';
 
 // Returned value is rounded as we work in full pixels not half pixels.
@@ -21,19 +22,54 @@ export const getTotalDuration = (scenes) => {
   return totalDuration;
 };
 
+export const convertScenePropsToPx = (scene) => {
+  scene.duration = calcPercentOfWindowHeight(scene.duration);
+
+  // loop animations
+  for (let j = 0; j < scene.animations.length; j++) {
+    convertAnimationToPx(scene.animations[j], scene.duration);
+  }
+
+  // loop audio
+  if (scene.audio) {
+    scene.audio.forEach((audioObj) => {
+      audioObj.props.forEach((prop) => {
+        // convert array of keys to pixels
+        prop.keys = prop.keys.map((key) => calcPercentOfWindowHeight(key));
+      });
+    });
+  }
+};
 // Converts all the values in the scenes object to pixels based off of the the
 // height and width of the viewport.
-export const convertScenePropsToPx = (scenes) => {
-  var i, j, k;
+export const convertScenesPropsToPx = (scenes) => {
+  return scenes.map((scene) => {
+    convertScenePropsToPx(scene);
+  });
+};
 
-  for (i = 0; i < scenes.length; i++) {
-    // loop scenes
-
-    scenes[i].duration = calcPercentOfWindowHeight(scenes[i].duration);
-
+// Converts scene property values that have been defined with shorthand expressions
+// instead of using the keys and values arrays.
+export const convertSceneShorthandProps = (scene) => {
+  // SETS KEYS ARRAY FOR ANIMATIONS WITH NO KEYS SET!!!!!
+  // MOVE THIS OUT
+  for (let j = 0; j < scene.animations.length; j++) {
     // loop animations
-    for (j = 0; j < scenes[i].animations.length; j++) {
-      convertAnimationToPx(scenes[i].animations[j], scenes[i].duration);
-    }
+
+    Object.keys(scene.animations[j]).forEach(function (key) {
+      // loop properties
+      let value = scene.animations[j][key];
+
+      if (
+        key !== 'selector' &&
+        value instanceof Array === false &&
+        value instanceof Object === false
+      ) {
+        var valueSet = [];
+        valueSet.push(getDefaultPropertyValue(key), value);
+        value = valueSet;
+      }
+      scene.animations[j][key] = value;
+    });
   }
 };

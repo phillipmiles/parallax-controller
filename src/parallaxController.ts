@@ -1,4 +1,8 @@
-import { convertScenePropsToPx, getTotalDuration } from './parallax';
+import {
+  convertScenesPropsToPx,
+  convertSceneShorthandProps,
+  getTotalDuration,
+} from './parallax';
 
 export const parallaxController = (scenes) => {
   var windowHeight = 0,
@@ -21,8 +25,10 @@ export const parallaxController = (scenes) => {
     windowWidth = window.innerWidth;
     scrollTop = window.scrollY;
 
-    // convertAllPropsToPx();
-    convertScenePropsToPx(scenes);
+    convertScenesPropsToPx(scenes);
+    scenes.forEach((scene) => {
+      convertSceneShorthandProps(scene);
+    });
     totalDuration = getTotalDuration(scenes);
 
     buildPage();
@@ -64,26 +70,6 @@ export const parallaxController = (scenes) => {
       if (!wrappers.includes(scenes[i].wrapper)) {
         wrappers.push(scenes[i].wrapper);
       }
-
-      for (j = 0; j < scenes[i].animations.length; j++) {
-        // loop animations
-
-        Object.keys(scenes[i].animations[j]).forEach(function (key) {
-          // loop properties
-          let value = scenes[i].animations[j][key];
-
-          if (
-            key !== 'selector' &&
-            value instanceof Array === false &&
-            value instanceof Object === false
-          ) {
-            var valueSet = [];
-            valueSet.push(getDefaultPropertyValue(key), value);
-            value = valueSet;
-          }
-          scenes[i].animations[j][key] = value;
-        });
-      }
     }
 
     document.body.style.height = bodyHeight + windowHeight + 'px';
@@ -100,20 +86,6 @@ export const parallaxController = (scenes) => {
     }
 
     element.style.display = 'block';
-  }
-
-  function convertPercentToPx(value, relativeTo) {
-    if (typeof value === 'string' && value.match(/%/g)) {
-      if (typeof relativeTo === 'string') {
-        if (relativeTo === 'y')
-          value = Math.round((parseFloat(value) / 100) * windowHeight);
-        if (relativeTo === 'x')
-          value = Math.round((parseFloat(value) / 100) * windowWidth);
-      } else if (typeof relativeTo === 'number') {
-        value = Math.round((parseFloat(value) / 100) * relativeTo);
-      }
-    }
-    return value;
   }
 
   function setScrollTops() {
