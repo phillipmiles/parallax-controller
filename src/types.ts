@@ -14,6 +14,7 @@ export interface animation {
 export interface audio {
   src: string;
   sample: {
+    state: string;
     context: AudioContext;
     buffer: AudioBuffer;
   };
