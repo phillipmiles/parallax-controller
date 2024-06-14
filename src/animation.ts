@@ -20,8 +20,6 @@ export const easeInOutQuad = (t, b, c, d) => {
   return (-c / 2) * (Math.cos((Math.PI * t) / d) - 1) + b;
 };
 
-export const findCurrentPropKey = (keys, sceneProgress) => {};
-
 export const calcPropValue = (
   animationObj,
   propName,
@@ -68,14 +66,14 @@ export const calcPropValue = (
       startValue = property[0];
       endValue = property[1];
     }
-    console.log(
-      'keyProgress',
-      keyProgress,
-      'currentKey',
-      currentKey,
-      'sceneProgress',
-      sceneProgress
-    );
+    // console.log(
+    //   'keyProgress',
+    //   keyProgress,
+    //   'currentKey',
+    //   currentKey,
+    //   'sceneProgress',
+    //   sceneProgress
+    // );
     value = easeInOutQuad(
       keyProgress,
       startValue,

@@ -11,6 +11,10 @@ export interface animation {
   scale?: string | animationProp;
 }
 
+export interface prop {
+  keys: string[];
+}
+
 export interface audio {
   src: string;
   sample: {
@@ -18,6 +22,9 @@ export interface audio {
     context: AudioContext;
     buffer: AudioBuffer;
   };
+  props: prop[];
+  start?: string | number;
+  stop?: string | number;
 }
 
 export interface scene {

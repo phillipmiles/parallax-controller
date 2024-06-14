@@ -33,9 +33,15 @@ export const convertScenePropsToPx = (scene) => {
   // loop audio
   if (scene.audio) {
     scene.audio.forEach((audioObj) => {
+      audioObj.start = calcPercentOfValue(audioObj.start, scene.duration);
+      audioObj.stop = calcPercentOfValue(audioObj.stop, scene.duration);
+
       audioObj.props.forEach((prop) => {
         // convert array of keys to pixels
-        prop.keys = prop.keys.map((key) => calcPercentOfWindowHeight(key));
+        prop.keys = prop.keys.map((key) =>
+          calcPercentOfValue(key, audioObj.stop - audioObj.start)
+        );
+        // prop.keys = prop.keys.map((key) => calcPercentOfWindowHeight(key));
       });
     });
   }

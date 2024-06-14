@@ -4,6 +4,8 @@ import { audio, scene } from './types';
 //   {
 //     src: 'assets/sfx/rocky.wav',
 //     isLooped: true,
+//     start: 36%,
+//     stop: 42%,
 //     props: [{
 //         type: 'gain',
 //         values: [0, 0, 100, 0, 0],
@@ -13,6 +15,11 @@ import { audio, scene } from './types';
 //   }
 // ],
 
+// Functions assumes values in array are ordered in ascending order.
+export const getCurrentKeyIndex = (array, value) => {
+  return array.findLastIndex((item) => item <= value);
+};
+
 const getAudioFile = async (audioContext, filepath) => {
   const response = await fetch(filepath);
   const arrayBuffer = await response.arrayBuffer();
@@ -20,9 +27,12 @@ const getAudioFile = async (audioContext, filepath) => {
   return audioBuffer;
 };
 
+// https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
+//
 const playSample = (audioContext, audioBuffer, time) => {
   const sampleSource = new AudioBufferSourceNode(audioContext, {
     buffer: audioBuffer,
+    loop: false,
     playbackRate: 1, // Speed setting
   });
   sampleSource.connect(audioContext.destination);
@@ -34,14 +44,40 @@ const playSample = (audioContext, audioBuffer, time) => {
 
 const initAudioSample = async (audioObj: audio) => {
   const audioCtx = new AudioContext();
+  audioCtx.onstatechange = () => {
+    console.log('state2', audioCtx.state);
+  };
   audioObj.sample = { state: 'loading', context: null, buffer: null };
   const audioBuffer = await getAudioFile(audioCtx, audioObj.src);
   audioObj.sample = { state: 'ready', context: audioCtx, buffer: audioBuffer };
 };
 
-export const manageSceneAudio = (scene: scene, relativeScrollTop) => {
+const applyAudioProp = (prop, relativeScrollTop) => {
+  const currentIndex = getCurrentKeyIndex(prop.keys, relativeScrollTop);
+
+  console.log('currentIndex', currentIndex, prop);
+
+  if ((currentIndex) => 0) {
+    console.log('CALC A THING!!!');
+  }
+};
+
+const applyAudioProps = (audioObj, relativeScrollTop) => {
+  audioObj.props.forEach((prop) => applyAudioProp(prop, relativeScrollTop));
+};
+
+export const manageSceneAudio = (scene: scene, sceneScrollTop) => {
   if (!scene.audio) return;
+  // console.log('relativeScrollTop', relativeScrollTop, window.scrollY);
   scene.audio.forEach((audioObj) => {
+    // Adjust scroll top to be relative to any start/stop values if availalble.
+    const relativeScrollTop =
+      audioObj.start && typeof audioObj.start === 'number'
+        ? sceneScrollTop - audioObj.start
+        : sceneScrollTop;
+    console.log('relativeScrollTop', relativeScrollTop, sceneScrollTop);
+
+    applyAudioProps(audioObj, relativeScrollTop);
     // translateX = calcPropValue(
     //   audioObj,
     //   'translateX',
@@ -56,10 +92,23 @@ export const manageSceneAudio = (scene: scene, relativeScrollTop) => {
       console.log('INIT AUDIO');
       initAudioSample(audioObj);
     }
-    if (audioObj.sample && audioObj.sample.state === 'ready') {
+    if (
+      audioObj.sample &&
+      audioObj.sample.state === 'ready' &&
+      navigator.userActivation.hasBeenActive // checks if user has ever interacted
+      // https://developer.mozilla.org/en-US/docs/Web/API/UserActivation
+    ) {
       console.log('play');
+
+      // NOOOOPE NEED TO STOP MAKING A ZILLION BUFFERSOURCENODES!!!!
+      const sample = playSample(
+        audioObj.sample.context,
+        audioObj.sample.buffer,
+        0
+      );
+
+      console.log('DO ONCE!!!!');
       audioObj.sample.state = 'playing';
-      playSample(audioObj.sample.context, audioObj.sample.buffer, 0);
     }
   });
 
