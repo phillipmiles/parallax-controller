@@ -26,7 +26,7 @@ const playSample = (audioContext, audioBuffer, time) => {
     playbackRate: 1, // Speed setting
   });
   sampleSource.connect(audioContext.destination);
-  sampleSource.start(time);
+  sampleSource.start();
   return sampleSource;
 };
 
@@ -38,9 +38,17 @@ const initAudioSample = async (audioObj: audio) => {
   audioObj.sample = { context: audioCtx, buffer: audioBuffer };
 };
 
-export const manageSceneAudio = (scene: scene) => {
+export const manageSceneAudio = (scene: scene, relativeScrollTop) => {
   if (!scene.audio) return;
   scene.audio.forEach((audioObj) => {
+    // translateX = calcPropValue(
+    //   audioObj,
+    //   'translateX',
+    //   'ease',
+    //   scenes[currentScene].duration,
+    //   relativeScrollTop
+    // );
+
     // TODO Handle a check here to see if we should start loading the audio on
     // page load or lazy load it later???
     if (!audioObj.sample) {

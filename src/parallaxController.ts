@@ -1,3 +1,4 @@
+import { calcPropValue, easeInOutQuad } from './animation';
 import { manageSceneAudio } from './audio';
 import {
   convertScenesPropsToPx,
@@ -5,7 +6,11 @@ import {
   getTotalDuration,
 } from './parallax';
 
-export const parallaxController = (scenes) => {
+interface config {
+  scrollRestoration: boolean;
+}
+
+export const parallaxController = (scenes, config: config) => {
   var windowHeight = 0,
     windowWidth = 0,
     bodyHeight = 0,
@@ -26,6 +31,12 @@ export const parallaxController = (scenes) => {
     windowWidth = window.innerWidth;
     scrollTop = window.scrollY;
 
+    if (config.scrollRestoration === true) {
+      history.scrollRestoration = 'auto';
+    } else if (config.scrollRestoration === false) {
+      history.scrollRestoration = 'manual';
+    }
+
     convertScenesPropsToPx(scenes);
     scenes.forEach((scene) => {
       convertSceneShorthandProps(scene);
@@ -33,7 +44,18 @@ export const parallaxController = (scenes) => {
     totalDuration = getTotalDuration(scenes);
 
     buildPage();
-    setPage();
+
+    // If scroll restoration is true then we need to listen to the
+    // scroll event to be avaiable before getting the scroll position
+    // and initilising past scenes
+    if (config.scrollRestoration === true) {
+      const initPageScroll = () => {
+        setScrollTops();
+        setPage();
+        window.removeEventListener('scroll', initPageScroll, false);
+      };
+      window.addEventListener('scroll', initPageScroll, false);
+    }
 
     // debugMessages();
 
@@ -72,7 +94,6 @@ export const parallaxController = (scenes) => {
 
     document.body.style.height = bodyHeight + windowHeight + 'px';
 
-    setScrollTops();
     currentWrapper = wrappers[0];
 
     let element;
@@ -98,7 +119,6 @@ export const parallaxController = (scenes) => {
   }
 
   function requestTick() {
-    console.log('dfg', ticking);
     if (!ticking) {
       requestAnimationFrame(updatePage);
     }
@@ -109,7 +129,7 @@ export const parallaxController = (scenes) => {
     setScene();
     setScrollTops();
     animateElements();
-    scenes.forEach((scene) => manageSceneAudio(scene));
+    manageSceneAudio(scenes[currentScene], relativeScrollTop);
     ticking = false;
   }
 
@@ -221,7 +241,14 @@ export const parallaxController = (scenes) => {
       prevScenesDurations += scenes[currentScene].duration;
       currentScene++;
     }
-
+    // ERROR!!!!
+    // ERROR!!!!
+    // This function is suppose to set all previous scenes to the correct
+    // values on page load but we can't get the scroll position yet. It still returns
+    // zero and hasn't restored itself yet.
+    // ERROR!!!!
+    // ERROR!!!!
+    console.log('currentScene', currentScene, scrollTop);
     for (var i = 0; i < currentScene; i++) {
       // Run through and set all animated elements to their end positions until we hit the current Scene.
       if (currentScene != i) {
@@ -277,11 +304,41 @@ export const parallaxController = (scenes) => {
 
     for (var i = 0; i < scenes[currentScene].animations.length; i++) {
       animation = scenes[currentScene].animations[i];
-      translateY = calcPropValue(animation, 'translateY', 'ease');
-      translateX = calcPropValue(animation, 'translateX', 'ease');
-      scale = calcPropValue(animation, 'scale', 'ease');
-      rotate = calcPropValue(animation, 'rotate', 'ease');
-      opacity = calcPropValue(animation, 'opacity', 'ease');
+      translateY = calcPropValue(
+        animation,
+        'translateY',
+        'ease',
+        scenes[currentScene].duration,
+        relativeScrollTop
+      );
+      translateX = calcPropValue(
+        animation,
+        'translateX',
+        'ease',
+        scenes[currentScene].duration,
+        relativeScrollTop
+      );
+      scale = calcPropValue(
+        animation,
+        'scale',
+        'ease',
+        scenes[currentScene].duration,
+        relativeScrollTop
+      );
+      rotate = calcPropValue(
+        animation,
+        'rotate',
+        'ease',
+        scenes[currentScene].duration,
+        relativeScrollTop
+      );
+      opacity = calcPropValue(
+        animation,
+        'opacity',
+        'ease',
+        scenes[currentScene].duration,
+        relativeScrollTop
+      );
 
       // translateY = current_scroll / 2.5;
       // translateY = Math.round(translateY);
@@ -357,75 +414,6 @@ export const parallaxController = (scenes) => {
     }
 
     return value;
-  }
-
-  function calcPropValue(animation, property, type) {
-    var value = animation[property];
-    var currentKey = 0;
-
-    var currentTime = relativeScrollTop;
-    var duration = scenes[currentScene].duration;
-
-    var startValue;
-    let endValue;
-
-    if (value && type === 'ease') {
-      if (value instanceof Array === false) {
-        while (currentKey < animation[property].keys.length - 1) {
-          if (
-            relativeScrollTop >= animation[property].keys[currentKey] &&
-            relativeScrollTop <= animation[property].keys[currentKey + 1]
-          ) {
-            // Adjust current time to account for offset caused by past keys.
-            currentTime = currentTime - animation[property].keys[currentKey];
-            duration =
-              animation[property].keys[currentKey + 1] -
-              animation[property].keys[currentKey];
-            break;
-
-            // Force to last key if scroll exceeds scene total duration.
-          } else if (relativeScrollTop > duration) {
-            currentKey = animation[property].keys.length - 2;
-            currentTime = currentTime - animation[property].keys[currentKey];
-            duration =
-              animation[property].keys[currentKey + 1] -
-              animation[property].keys[currentKey];
-            break;
-          } else {
-            currentKey++;
-          }
-        }
-
-        startValue = animation[property].positions[currentKey];
-        endValue = animation[property].positions[currentKey + 1];
-      } else {
-        startValue = value[0];
-        endValue = value[1];
-      }
-
-      value = easeInOutQuad(
-        currentTime,
-        startValue,
-        endValue - startValue,
-        duration
-      );
-    } else if (value && type === 'instant') {
-      value = value[1];
-    } else {
-      value = getDefaultPropertyValue(property);
-    }
-
-    /* Return console error when calculation fails */
-    if (isNaN(value)) {
-      console.log('NaN returned when caculating animation value.');
-    }
-
-    return value;
-  }
-
-  function easeInOutQuad(t, b, c, d) {
-    // sinusoadial in and out
-    return (-c / 2) * (Math.cos((Math.PI * t) / d) - 1) + b;
   }
 
   return {

@@ -26,6 +26,7 @@
           audio: [
             {
               src: 'assets/sfx/rocky.wav',
+              // src: 'assets/song.mp3',
               isLooped: true,
               props: [{
                   type: 'gain',
@@ -51,8 +52,7 @@
             }, 
             {
               'selector' : '.square02',
-              'translateY' : '-15%',
-              'opacity' : 1
+              'translateY' : '-15%'
             }
           ]
         },
@@ -67,7 +67,6 @@
             } , {
               'selector' : '.square03',
               'translateY' : -120,
-              'opacity' : 1,
               'scale' : 0.25
             }
           ]
@@ -76,11 +75,14 @@
 
       // const run = () => {
         
-        var parallax = parallax.parallaxController(scenes);
+        parallax.parallaxController(scenes, {
+          scrollRestoration: true,
+        });
         console.log(scenes);
       // console.log(parallax)
       // }
-      // document.onload = run;
+      // document.addEventListener('DOMContentLoaded', run, false);
+      
 
       // console.log('rgun');
       // var scrollIntervalID = setInterval(updateDebugger, 10);
