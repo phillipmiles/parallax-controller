@@ -1,3 +1,4 @@
+import { easeInOutQuad } from './animation';
 import { audio, scene } from './types';
 
 // audio: [
@@ -52,14 +53,39 @@ const initAudioSample = async (audioObj: audio) => {
   audioObj.sample = { state: 'ready', context: audioCtx, buffer: audioBuffer };
 };
 
+const calcPropValue = (prop, index, relativeScrollTop) => {
+  if (index === -1) {
+    // If index doesn't exist return first value.
+    return prop.values[0];
+  } else if (index === prop.keys.length - 1) {
+    // If last index then return last value.
+    return prop.values[index];
+  } else {
+    // Otherwise calculate the interprolated value.
+    // TODO:: Handle different easings (linear, quad, instant)
+    const startValue = prop.values[index];
+    const endValue = prop.values[index + 1];
+    const duration = prop.keys[index + 1] - prop.keys[index];
+
+    const keyProgress = relativeScrollTop + prop.keys[index];
+    console.log(prop.keys[index], duration);
+    return easeInOutQuad(
+      keyProgress,
+      startValue,
+      endValue - startValue,
+      duration
+    );
+  }
+};
+
 const applyAudioProp = (prop, relativeScrollTop) => {
   const currentIndex = getCurrentKeyIndex(prop.keys, relativeScrollTop);
 
-  console.log('currentIndex', currentIndex, prop);
-
-  if ((currentIndex) => 0) {
-    console.log('CALC A THING!!!');
-  }
+  console.log(
+    'currentIndex',
+    currentIndex,
+    calcPropValue(prop, currentIndex, relativeScrollTop)
+  );
 };
 
 const applyAudioProps = (audioObj, relativeScrollTop) => {
