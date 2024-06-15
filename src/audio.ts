@@ -126,29 +126,43 @@ export const triggeredByDirection = (
   return false;
 };
 
-export const initGrainNode = (audioObj, source, value) => {
-  const gainNode = audioObj.sample.context.createGain();
-  source.effectNodes[source.effectNodes.length - 1].connect(gainNode);
-
-  gainNode.gain.setValueAtTime(value, audioObj.sample.context.currentTime);
-
-  source.effectNodes.push(gainNode);
+export const initGainNode = (audioContext, value) => {
+  const gainNode = audioContext.createGain();
+  gainNode.gain.setValueAtTime(value, audioContext.currentTime);
+  return gainNode;
 };
 
-export const initAudioProps = (audioObj, source, relativeProgress) => {
+export const initEffectNodes = (audioObj, relativeProgress) => {
+  const effectNodes = [];
+
+  // Create volume node
+  if (audioObj.volume >= 0) {
+    const volumeNode = initGainNode(audioObj.sample.context, audioObj.volume);
+    effectNodes.push(volumeNode);
+  }
+
   audioObj.props.forEach((prop) => {
     const value = getCurrentPropValue(prop, relativeProgress);
-    console.log('VALUE!!!', value);
-    if (prop.type === 'gain') {
-      initGrainNode(audioObj, source, value);
-    }
 
-    // TODO::: Maybe instead collect an array of the calculated values to
-    // be applied to the audio object or anmation selector and apply them
-    // all at once. That way we can apply all css transforms in one line and
-    // and maybe multiple audio effects at once on the same sample.
-    // applyAudioProp(audioObj, prop, relativeProgress, value);
+    if (prop.type === 'gain') {
+      const gainNode = initGainNode(audioObj.sample.context, value);
+      effectNodes.push(gainNode);
+      // TODO::: WILL NEED TO MARK OR ID EACH EFFECT NODE SO WE KNOW
+      // WHICH ONES TO UPDATE WITH WHAT VALUES ON SCROLL EVENTS.
+      // Should the ID be written in the script so we can link the props
+      // to the effect nodes? Or do we assume only one type of each prop
+      // can exist. One 'gain' prop for example.
+    }
   });
+
+  // Connect effect nodes together.
+  effectNodes.forEach((node, index) => {
+    if (index < effectNodes.length - 1) {
+      node.connect(effectNodes[index + 1]);
+    }
+  });
+
+  return effectNodes;
 };
 
 export const triggerAudioSource = (audioObj, relativeProgress) => {
@@ -160,30 +174,24 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
     }
   );
 
-  const source = {
-    sourceNode: sourceNode,
-    effectNodes: [],
-  };
+  const effectNodes = initEffectNodes(audioObj, relativeProgress);
 
-  // Create volume node
-  // if (audioObj.volume) {
-  const volumeNode = audioObj.sample.context.createGain();
-  sourceNode.connect(volumeNode);
-
-  volumeNode.gain.setValueAtTime(
-    audioObj.volume >= 0 ? audioObj.volume : 1,
-    audioObj.sample.context.currentTime
-  );
-  source.effectNodes.push(volumeNode);
-  // }
-
-  initAudioProps(audioObj, source, relativeProgress);
-
-  source.effectNodes[source.effectNodes.length - 1].connect(
+  // Connect source node with first effects node and connect
+  // last effects node with destination.
+  sourceNode.connect(effectNodes[0]);
+  effectNodes[effectNodes.length - 1].connect(
     audioObj.sample.context.destination
   );
-  sourceNode.start();
 
+  const source = {
+    sourceNode: sourceNode,
+    effectNodes: effectNodes,
+  };
+  // Store source so we can keep track of how many we're playing.
+  audioObj.sample.sources.unshift(source);
+
+  // Play source
+  sourceNode.start();
   // Remove reference to source once its finished playing
   sourceNode.addEventListener('ended', (event) => {
     const sourceIndex = audioObj.sample.sources.findIndex(
@@ -191,8 +199,6 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
     );
     audioObj.sample.sources.splice(sourceIndex, 1);
   });
-  // Store source so we can keep track of how many we're playing.
-  audioObj.sample.sources.unshift(source);
 };
 
 export const manageSceneAudio = (
