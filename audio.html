@@ -24,21 +24,7 @@
         {
           'wrapper' : '#intro',
           'duration' : '150%',
-          audio: [
-            {
-              src: 'assets/sfx/rocky.wav',
-              // src: 'assets/song.mp3',
-              isLooped: true,
-              start: '40%',
-              stop: '80%',
-              props: [{
-                  type: 'gain',
-                  values: [0, 100, 0],
-                  keys: ['0%', '50%', '100%'],
-                  isMotionControlled: true
-              }],
-            }
-          ],
+          
           'animations' : [
             {
               'selector' : '.square01',
@@ -62,6 +48,21 @@
         {
           'wrapper' : '#intro',
           'duration' : '150%',
+          audio: [
+            {
+              src: 'assets/sfx/rocky.wav',
+              // src: 'assets/song.mp3',
+              isLooped: true,
+              // start: '30%',
+              // stop: '70%',
+              props: [{
+                  type: 'gain',
+                  values: [0, 100, 0, 100],
+                  keys: ['0%', '33%', '66%','100%'],
+                  isMotionControlled: true
+              }],
+            }
+          ],
           'animations' : [
             {
               'translateY' : ['-15%', '-15%'],

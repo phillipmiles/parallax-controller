@@ -53,7 +53,7 @@ const initAudioSample = async (audioObj: audio) => {
   audioObj.sample = { state: 'ready', context: audioCtx, buffer: audioBuffer };
 };
 
-const calcPropValue = (prop, index, relativeScrollTop) => {
+const calcPropValue = (prop, index, propProgress) => {
   if (index === -1) {
     // If index doesn't exist return first value.
     return prop.values[0];
@@ -67,8 +67,8 @@ const calcPropValue = (prop, index, relativeScrollTop) => {
     const endValue = prop.values[index + 1];
     const duration = prop.keys[index + 1] - prop.keys[index];
 
-    const keyProgress = relativeScrollTop + prop.keys[index];
-    console.log(prop.keys[index], duration);
+    const keyProgress = propProgress - prop.keys[index];
+
     return easeInOutQuad(
       keyProgress,
       startValue,
@@ -80,12 +80,8 @@ const calcPropValue = (prop, index, relativeScrollTop) => {
 
 const applyAudioProp = (prop, relativeScrollTop) => {
   const currentIndex = getCurrentKeyIndex(prop.keys, relativeScrollTop);
-
-  console.log(
-    'currentIndex',
-    currentIndex,
-    calcPropValue(prop, currentIndex, relativeScrollTop)
-  );
+  const value = calcPropValue(prop, currentIndex, relativeScrollTop);
+  console.log('Prop value', value);
 };
 
 const applyAudioProps = (audioObj, relativeScrollTop) => {
@@ -101,7 +97,7 @@ export const manageSceneAudio = (scene: scene, sceneScrollTop) => {
       audioObj.start && typeof audioObj.start === 'number'
         ? sceneScrollTop - audioObj.start
         : sceneScrollTop;
-    console.log('relativeScrollTop', relativeScrollTop, sceneScrollTop);
+    // console.log('relativeScrollTop', relativeScrollTop, sceneScrollTop);
 
     applyAudioProps(audioObj, relativeScrollTop);
     // translateX = calcPropValue(
