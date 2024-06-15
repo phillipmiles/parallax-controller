@@ -33,16 +33,26 @@ export const convertScenePropsToPx = (scene) => {
   // loop audio
   if (scene.audio) {
     scene.audio.forEach((audioObj) => {
-      audioObj.start = calcPercentOfValue(audioObj.start, scene.duration);
-      audioObj.stop = calcPercentOfValue(audioObj.stop, scene.duration);
+      // If start stop exist calc keys relative to that range otherwise calc
+      // based off scene duration.
+      if (audioObj.start && audioObj.stop) {
+        audioObj.start = calcPercentOfValue(audioObj.start, scene.duration);
+        audioObj.stop = calcPercentOfValue(audioObj.stop, scene.duration);
 
-      audioObj.props.forEach((prop) => {
-        // convert array of keys to pixels
-        prop.keys = prop.keys.map((key) =>
-          calcPercentOfValue(key, audioObj.stop - audioObj.start)
-        );
-        // prop.keys = prop.keys.map((key) => calcPercentOfWindowHeight(key));
-      });
+        audioObj.props.forEach((prop) => {
+          // convert array of keys to pixels
+          prop.keys = prop.keys.map((key) =>
+            calcPercentOfValue(key, audioObj.stop - audioObj.start)
+          );
+        });
+      } else {
+        audioObj.props.forEach((prop) => {
+          // convert array of keys to pixels
+          prop.keys = prop.keys.map((key) =>
+            calcPercentOfValue(key, scene.duration)
+          );
+        });
+      }
     });
   }
 };
