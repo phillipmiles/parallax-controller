@@ -27,8 +27,15 @@
           audio: [ {
             src: 'assets/sfx/rocky.wav',
             trigger: '50%',
+            volume: 0.2,
             triggerDirection: 'both', // Direction of scroll trigger
             maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [{
+                  type: 'gain',
+                  values: [0, 0.2, 0],
+                  keys: ['0%', '50%', '100%'],
+                  isMotionControlled: true
+              }],
           }],
           'animations' : [
             {
