@@ -1,4 +1,5 @@
 import { easeInOutQuad } from './animation';
+import { getCurrentPropValue } from './property';
 import { audio, scene } from './types';
 
 // audio: [
@@ -15,11 +16,6 @@ import { audio, scene } from './types';
 //     }],
 //   }
 // ],
-
-// Functions assumes values in array are ordered in ascending order.
-export const getCurrentKeyIndex = (array, value) => {
-  return array.findLastIndex((item) => item <= value);
-};
 
 const getAudioFile = async (audioContext, filepath) => {
   const response = await fetch(filepath);
@@ -53,39 +49,19 @@ const initAudioSample = async (audioObj: audio) => {
   audioObj.sample = { state: 'ready', context: audioCtx, buffer: audioBuffer };
 };
 
-const calcPropValue = (prop, index, propProgress) => {
-  if (index === -1) {
-    // If index doesn't exist return first value.
-    return prop.values[0];
-  } else if (index === prop.keys.length - 1) {
-    // If last index then return last value.
-    return prop.values[index];
-  } else {
-    // Otherwise calculate the interprolated value.
-    // TODO:: Handle different easings (linear, quad, instant)
-    const startValue = prop.values[index];
-    const endValue = prop.values[index + 1];
-    const duration = prop.keys[index + 1] - prop.keys[index];
-
-    const keyProgress = propProgress - prop.keys[index];
-
-    return easeInOutQuad(
-      keyProgress,
-      startValue,
-      endValue - startValue,
-      duration
-    );
-  }
-};
-
-const applyAudioProp = (prop, relativeScrollTop) => {
-  const currentIndex = getCurrentKeyIndex(prop.keys, relativeScrollTop);
-  const value = calcPropValue(prop, currentIndex, relativeScrollTop);
-  console.log('Prop value', value);
+const applyAudioProp = (audioObj, prop, relativeScrollTop, value) => {
+  console.log('do somethin');
 };
 
 const applyAudioProps = (audioObj, relativeScrollTop) => {
-  audioObj.props.forEach((prop) => applyAudioProp(prop, relativeScrollTop));
+  audioObj.props.forEach((prop) => {
+    const value = getCurrentPropValue(prop, relativeScrollTop);
+    // TODO::: Maybe instead collect an array of the calculated values to
+    // be applied to the audio object or anmation selector and apply them
+    // all at once. That way we can apply all css transforms in one line and
+    // and maybe multiple audio effects at once on the same sample.
+    applyAudioProp(audioObj, prop, relativeScrollTop, value);
+  });
 };
 
 export const manageSceneAudio = (scene: scene, sceneScrollTop) => {
