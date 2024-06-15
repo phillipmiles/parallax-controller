@@ -21,6 +21,7 @@ export const calcPropValue = (prop, index, propProgress) => {
     const endValue = prop.values[index + 1];
     const duration = prop.keys[index + 1] - prop.keys[index];
 
+    // Calc progress through current key.
     const keyProgress = propProgress - prop.keys[index];
 
     return easeInOutQuad(
@@ -32,8 +33,8 @@ export const calcPropValue = (prop, index, propProgress) => {
   }
 };
 
-export const getCurrentPropValue = (prop, relativeScrollTop) => {
-  const currentIndex = getCurrentPropKeyIndex(prop.keys, relativeScrollTop);
-  const value = calcPropValue(prop, currentIndex, relativeScrollTop);
+export const getCurrentPropValue = (prop, propProgress) => {
+  const currentIndex = getCurrentPropKeyIndex(prop.keys, propProgress);
+  const value = calcPropValue(prop, currentIndex, propProgress);
   return value;
 };

@@ -24,7 +24,12 @@
         {
           'wrapper' : '#intro',
           'duration' : '150%',
-          
+          audio: [ {
+            src: 'assets/sfx/rocky.wav',
+            trigger: '50%',
+            triggerDirection: 'both', // Direction of scroll trigger
+            maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+          }],
           'animations' : [
             {
               'selector' : '.square01',
@@ -49,19 +54,19 @@
           'wrapper' : '#intro',
           'duration' : '150%',
           audio: [
-            {
-              src: 'assets/sfx/rocky.wav',
-              // src: 'assets/song.mp3',
-              isLooped: true,
-              start: '30%',
-              stop: '70%',
-              props: [{
-                  type: 'gain',
-                  values: [0, 100, 0, 100],
-                  keys: ['0%', '33%', '66%','100%'],
-                  isMotionControlled: true
-              }],
-            }
+            // {
+            //   src: 'assets/sfx/rocky.wav',
+            //   // src: 'assets/song.mp3',
+            //   isLooped: true,
+            //   start: '30%',
+            //   stop: '70%',
+            //   props: [{
+            //       type: 'gain',
+            //       values: [0, 100, 0, 100],
+            //       keys: ['0%', '33%', '66%','100%'],
+            //       isMotionControlled: true
+            //   }],
+            // }
           ],
           'animations' : [
             {

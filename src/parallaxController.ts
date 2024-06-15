@@ -1,5 +1,5 @@
 import { calcPropValue, easeInOutQuad } from './animation';
-import { manageSceneAudio } from './audio';
+import { initPageAudio, manageSceneAudio } from './audio';
 import {
   convertScenesPropsToPx,
   convertSceneShorthandProps,
@@ -15,6 +15,7 @@ export const parallaxController = (scenes, config: config) => {
     windowWidth = 0,
     bodyHeight = 0,
     scrollTop = 0,
+    prevScrollTop = [0, 0, 0, 0, 0],
     totalDuration = 0,
     currentWrapper = null,
     wrappers = [],
@@ -44,6 +45,7 @@ export const parallaxController = (scenes, config: config) => {
     totalDuration = getTotalDuration(scenes);
 
     buildPage();
+    initPageAudio(scenes);
 
     // If scroll restoration is true then we need to listen to the
     // scroll event to be avaiable before getting the scroll position
@@ -108,6 +110,8 @@ export const parallaxController = (scenes, config: config) => {
   }
 
   function setScrollTops() {
+    prevScrollTop.pop();
+    prevScrollTop.unshift(scrollTop);
     scrollTop = window.scrollY;
 
     /* No overscroll screwing things up */
@@ -129,7 +133,7 @@ export const parallaxController = (scenes, config: config) => {
     setScene();
     setScrollTops();
     animateElements();
-    manageSceneAudio(scenes[currentScene], relativeScrollTop);
+    manageSceneAudio(scenes[currentScene], relativeScrollTop, prevScrollTop);
     ticking = false;
   }
 

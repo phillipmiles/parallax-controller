@@ -21,8 +21,12 @@ export interface audio {
     state: string;
     context: AudioContext;
     buffer: AudioBuffer;
+    sources: AudioBufferSourceNode[];
   };
   props: prop[];
+  trigger?: string | number;
+  triggerDirection?: 'forwards' | 'backwards' | 'both';
+  maxPlaying?: number;
   start?: string | number;
   stop?: string | number;
 }
