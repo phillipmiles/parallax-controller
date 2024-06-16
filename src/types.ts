@@ -24,9 +24,9 @@ export interface audio {
     sources: AudioBufferSourceNode[];
   };
   props: prop[];
-  trigger?: string | number;
+  trigger?: string | number | string[] | number[]; // Position in scene that will that once passed will generate an instance
   triggerDirection?: 'forwards' | 'backwards' | 'both';
-  maxPlaying?: number;
+  maxPlaying?: number; // Max instances that this audio sample can have generated at one time
   start?: string | number;
   stop?: string | number;
 }

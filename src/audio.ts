@@ -160,6 +160,48 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
   });
 };
 
+export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
+  if (typeof audioObj.trigger === 'string') {
+    return triggeredByDirection(
+      currentPos,
+      prevPos,
+      audioObj.trigger,
+      audioObj.triggerDirection
+    );
+  } else {
+    if (audioObj.triggerDirection === 'forwards') {
+      return triggeredByDirection(
+        currentPos,
+        prevPos,
+        audioObj.trigger[0],
+        'forwards'
+      );
+    } else if (audioObj.triggerDirection === 'backwards') {
+      return triggeredByDirection(
+        currentPos,
+        prevPos,
+        audioObj.trigger[1],
+        'backwards'
+      );
+    } else {
+      return (
+        triggeredByDirection(
+          currentPos,
+          prevPos,
+          audioObj.trigger[0],
+          'forwards'
+        ) ||
+        triggeredByDirection(
+          currentPos,
+          prevPos,
+          audioObj.trigger[1],
+          'backwards'
+        )
+      );
+    }
+  }
+};
+
 export const manageSceneAudio = (
   scene: scene,
   sceneScrollTop,
@@ -191,14 +233,7 @@ export const manageSceneAudio = (
     // TODO: If range is supplied and a boolean is true make sounds stop
     // that have left range.
 
-    if (
-      triggeredByDirection(
-        relativeProgress,
-        prevRelativeProgress,
-        audioObj.trigger,
-        audioObj.triggerDirection
-      )
-    ) {
+    if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
       if (audioObj.sample) {
         if (
           !audioObj.maxPlaying ||

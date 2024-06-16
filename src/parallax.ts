@@ -22,6 +22,25 @@ export const getTotalDuration = (scenes) => {
   return totalDuration;
 };
 
+export const convertAudioTriggerToPx = (trigger, propDuration) => {
+  if (typeof trigger === 'string') {
+    return calcPercentOfValue(trigger, propDuration);
+  } else if (trigger instanceof Array) {
+    if (trigger.length !== 2) {
+      console.error('Audio trigger array must contain exactly two elements.');
+    }
+    const convertedTriggerArray = trigger.map((item) =>
+      calcPercentOfValue(item, propDuration)
+    );
+    if (convertedTriggerArray[0] > convertedTriggerArray[1]) {
+      console.error('Audio trigger array must be ordered in ascending order.');
+    }
+    return convertedTriggerArray;
+  } else {
+    console.error(`Audio trigger cannot be type ${typeof trigger}.`);
+  }
+};
+
 export const convertScenePropsToPx = (scene) => {
   scene.duration = calcPercentOfWindowHeight(scene.duration);
 
@@ -36,12 +55,15 @@ export const convertScenePropsToPx = (scene) => {
       audioObj.start = calcPercentOfValue(audioObj.start, scene.duration);
       audioObj.stop = calcPercentOfValue(audioObj.stop, scene.duration);
 
+      audioObj.trigger = convertAudioTriggerToPx(
+        audioObj.trigger,
+        scene.duration
+      );
+
       const propDuration =
         audioObj.start && audioObj.stop
           ? audioObj.stop - audioObj.start
           : scene.duration;
-
-      audioObj.trigger = calcPercentOfValue(audioObj.trigger, propDuration);
 
       if (audioObj.props) {
         // If start stop exist calc keys relative to that range otherwise calc
