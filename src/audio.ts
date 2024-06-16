@@ -46,20 +46,34 @@ const applyAudioProp = (audioObj, prop, relativeScrollTop, value) => {
 const applyAudioProps = (audioObj, relativeScrollTop) => {
   audioObj.props.forEach((prop) => {
     const value = getCurrentPropValue(prop, relativeScrollTop);
+    audioObj.sample.sources.forEach((source) => {
+      const propEffect = source.effectNodes.find(
+        (effect) => effect.id === prop.id
+      );
 
-    // if (prop.type === 'gain') {
-    //   const gainNode = audioObj.context.createGain();
+      if (propEffect) {
+        if (prop.type === 'gain') {
+          propEffect.node.gain.setValueAtTime(
+            value,
+            audioObj.sample.context.currentTime
+          );
+        }
+      }
 
-    //   gainNode.connect(audioObj.context.destination);
+      // if (prop.type === 'gain') {
+      //   const gainNode = audioObj.context.createGain();
 
-    //   gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-    // }
+      //   gainNode.connect(audioObj.context.destination);
 
-    // TODO::: Maybe instead collect an array of the calculated values to
-    // be applied to the audio object or anmation selector and apply them
-    // all at once. That way we can apply all css transforms in one line and
-    // and maybe multiple audio effects at once on the same sample.
-    applyAudioProp(audioObj, prop, relativeScrollTop, value);
+      //   gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+      // }
+
+      // TODO::: Maybe instead collect an array of the calculated values to
+      // be applied to the audio object or anmation selector and apply them
+      // all at once. That way we can apply all css transforms in one line and
+      // and maybe multiple audio effects at once on the same sample.
+      // applyAudioProp(audioObj, prop, relativeScrollTop, value);
+    });
   });
 };
 
@@ -85,10 +99,13 @@ export const triggeredByDirection = (
   return false;
 };
 
-export const initGainNode = (audioContext, value) => {
+export const initGainNode = (audioContext, value, nodeId) => {
   const gainNode = audioContext.createGain();
   gainNode.gain.setValueAtTime(value, audioContext.currentTime);
-  return gainNode;
+  return {
+    id: nodeId,
+    node: gainNode,
+  };
 };
 
 export const initEffectNodes = (audioObj, relativeProgress) => {
@@ -96,15 +113,19 @@ export const initEffectNodes = (audioObj, relativeProgress) => {
 
   // Create volume node
   if (audioObj.volume >= 0) {
-    const volumeNode = initGainNode(audioObj.sample.context, audioObj.volume);
+    const volumeNode = initGainNode(
+      audioObj.sample.context,
+      audioObj.volume,
+      'volume' // TODO NEED TO SEPERATE OUT BASE VOLUME FROM PROP NODES AND THERE IDS
+    );
     effectNodes.push(volumeNode);
   }
 
-  audioObj.props.forEach((prop) => {
+  audioObj.props.forEach((prop, index) => {
     const value = getCurrentPropValue(prop, relativeProgress);
 
     if (prop.type === 'gain') {
-      const gainNode = initGainNode(audioObj.sample.context, value);
+      const gainNode = initGainNode(audioObj.sample.context, value, prop.id);
       effectNodes.push(gainNode);
       // TODO::: WILL NEED TO MARK OR ID EACH EFFECT NODE SO WE KNOW
       // WHICH ONES TO UPDATE WITH WHAT VALUES ON SCROLL EVENTS.
@@ -115,9 +136,9 @@ export const initEffectNodes = (audioObj, relativeProgress) => {
   });
 
   // Connect effect nodes together.
-  effectNodes.forEach((node, index) => {
+  effectNodes.forEach((effect, index) => {
     if (index < effectNodes.length - 1) {
-      node.connect(effectNodes[index + 1]);
+      effect.node.connect(effectNodes[index + 1].node);
     }
   });
 
@@ -137,8 +158,8 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
 
   // Connect source node with first effects node and connect
   // last effects node with destination.
-  sourceNode.connect(effectNodes[0]);
-  effectNodes[effectNodes.length - 1].connect(
+  sourceNode.connect(effectNodes[0].node);
+  effectNodes[effectNodes.length - 1].node.connect(
     audioObj.sample.context.destination
   );
 
