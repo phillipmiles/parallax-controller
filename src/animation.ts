@@ -66,14 +66,7 @@ export const calcPropValue = (
       startValue = property[0];
       endValue = property[1];
     }
-    // console.log(
-    //   'keyProgress',
-    //   keyProgress,
-    //   'currentKey',
-    //   currentKey,
-    //   'sceneProgress',
-    //   sceneProgress
-    // );
+
     value = easeInOutQuad(
       keyProgress,
       startValue,

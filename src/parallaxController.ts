@@ -45,11 +45,17 @@ export const parallaxController = (scenes, config: config) => {
     totalDuration = getTotalDuration(scenes);
 
     buildPage();
+
+    // Set every element to their correct positions. We have to set
+    // this page even if scroll restoration is true because the scroll
+    // listener wont fire if scroll position is at the top of the page
+    // already.
+    setPage();
     initPageAudio(scenes);
 
     // If scroll restoration is true then we need to listen to the
     // scroll event to be avaiable before getting the scroll position
-    // and initilising past scenes
+    // and initilising the scenes.
     if (config.scrollRestoration === true) {
       const initPageScroll = () => {
         setScrollTops();
@@ -245,26 +251,23 @@ export const parallaxController = (scenes, config: config) => {
       prevScenesDurations += scenes[currentScene].duration;
       currentScene++;
     }
-    // ERROR!!!!
-    // ERROR!!!!
-    // This function is suppose to set all previous scenes to the correct
-    // values on page load but we can't get the scroll position yet. It still returns
-    // zero and hasn't restored itself yet.
-    // ERROR!!!!
-    // ERROR!!!!
-    console.log('currentScene', currentScene, scrollTop);
-    for (var i = 0; i < currentScene; i++) {
-      // Run through and set all animated elements to their end positions until we hit the current Scene.
-      if (currentScene != i) {
+
+    // Run through and set all animated elements to their correct positions.
+    for (var i = 0; i < scenes.length; i++) {
+      // If we aren't in the current scene we can just fetch the end or start
+      // positions rather then calculate the interprolated value.
+      if (currentScene !== i) {
         for (let j = 0; j < scenes[i].animations.length; j++) {
           var animation, translateY, translateX, scale, rotate, opacity;
 
+          const propIndexPosition = i < currentScene ? 'start' : 'end';
+
           animation = scenes[i].animations[j];
-          translateY = getPropValue(animation, 'translateY', 'end');
-          translateX = getPropValue(animation, 'translateX', 'end');
-          scale = getPropValue(animation, 'scale', 'end');
-          rotate = getPropValue(animation, 'rotate', 'end');
-          opacity = getPropValue(animation, 'opacity', 'end');
+          translateY = getPropValue(animation, 'translateY', propIndexPosition);
+          translateX = getPropValue(animation, 'translateX', propIndexPosition);
+          scale = getPropValue(animation, 'scale', propIndexPosition);
+          rotate = getPropValue(animation, 'rotate', propIndexPosition);
+          opacity = getPropValue(animation, 'opacity', propIndexPosition);
 
           animateSelector(
             animation.selector,
@@ -306,6 +309,8 @@ export const parallaxController = (scenes, config: config) => {
     var current_scroll = scrollTop;
     var animation, translateY, translateX, scale, rotate, opacity;
 
+    // TODO::Stop trying to calc properties that dont exist
+    // TODO::Actually replace this with the way calcPropValue is done from audio
     for (var i = 0; i < scenes[currentScene].animations.length; i++) {
       animation = scenes[currentScene].animations[i];
       translateY = calcPropValue(
