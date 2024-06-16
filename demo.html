@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Parallax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/style-demo.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="build/parallax.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="slide slide-1">
+        <div class="slide-circle slide-1-circle">
+          <h1>Water</h1>
+        </div>
+        <div class="slide slide-2">
+          <div class="slide-circle slide-2-circle">
+            <h1>Earth</h1>
+          </div>
+        </div>
+        <div class="slide slide-3">
+          <div class="slide-circle slide-3-circle">
+            <h1>Fire</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var scenes = [
+        {
+          wrapper: '#stage',
+          duration: '300%',
+          audio: [
+            {
+              src: 'assets/sfx/rocky.wav',
+              // trigger: '50%',
+              trigger: ['20%', '80%'],
+              volume: 0.2,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [0, 0, 1, 0, 0],
+                  keys: ['0%', '20%', '50%', '80%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+          ],
+          animations: [
+            {
+              selector: '.slide-1',
+              opacity: {
+                positions: [0, 1],
+                keys: ['0%', '10%'],
+              },
+            },
+            {
+              selector: '.slide-1-circle',
+              scale: {
+                positions: [4, 0],
+                keys: ['0%', '33%'],
+              },
+            },
+            {
+              selector: '.slide-2',
+              opacity: {
+                positions: [0, 0, 1],
+                keys: ['0%', '33%', '43%'],
+              },
+            },
+            {
+              selector: '.slide-2-circle',
+              scale: {
+                positions: [4, 4, 0],
+                keys: ['0%', '33%', '66%'],
+              },
+            },
+            {
+              selector: '.slide-3',
+              opacity: {
+                positions: [0, 0, 1],
+                keys: ['0%', '66%', '73%'],
+              },
+            },
+            {
+              selector: '.slide-3-circle',
+              scale: {
+                positions: [4, 4, 0],
+                keys: ['0%', '66%', '100%'],
+              },
+            },
+          ],
+        },
+      ];
+
+      // const run = () => {
+
+      const control = parallax.parallaxController(scenes, {
+        scrollRestoration: true,
+      });
+      console.log(scenes);
+
+      const turnOnAudio = () => {
+        control.enableAudio();
+      };
+
+      window.addEventListener('onclick', turnOnAudio);
+      // console.log(parallax)
+      // }
+      // document.addEventListener('DOMContentLoaded', run, false);
+
+      // console.log('rgun');
+      // var scrollIntervalID = setInterval(updateDebugger, 10);
+
+      //function updateDebugger() {
+      //    console.log(pc.getCurrentKeyframe());
+      //}
+    </script>
+  </body>
+</html>

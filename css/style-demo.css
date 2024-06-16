@@ -1,0 +1,63 @@
+#stage {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: yellow;
+}
+
+.slide {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-size: 40px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-family: Helvetica, sans-serif;
+  /* clip-path: circle(60px at center); */
+  /* mask-image: radial-gradient(circle at 50% center, #0000 1%, #000 0); */
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide-circle {
+  width: 100vh;
+  height: 100vh;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.slide-1 {
+  background-color: red;
+  color: red;
+}
+
+.slide-1-circle {
+  background-color: yellow;
+}
+
+.slide-2 {
+  background-color: blue;
+  color: blue;
+}
+
+.slide-2-circle {
+  background-color: red;
+}
+
+.slide-3 {
+  background-color: green;
+  color: green;
+}
+
+.slide-3-circle {
+  background-color: blue;
+}
