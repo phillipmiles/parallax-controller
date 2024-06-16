@@ -150,7 +150,7 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
     audioObj.sample.context,
     audioObj.sample.buffer,
     {
-      loop: false,
+      loop: audioObj.loop,
     }
   );
 

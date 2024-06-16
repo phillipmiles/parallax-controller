@@ -13,15 +13,15 @@
         <div class="slide-circle slide-1-circle">
           <h1>Water</h1>
         </div>
-        <div class="slide slide-2">
-          <div class="slide-circle slide-2-circle">
-            <h1>Earth</h1>
-          </div>
+      </div>
+      <div class="slide slide-2">
+        <div class="slide-circle slide-2-circle">
+          <h1>Earth</h1>
         </div>
-        <div class="slide slide-3">
-          <div class="slide-circle slide-3-circle">
-            <h1>Fire</h1>
-          </div>
+      </div>
+      <div class="slide slide-3">
+        <div class="slide-circle slide-3-circle">
+          <h1>Fire</h1>
         </div>
       </div>
     </div>
@@ -37,6 +37,7 @@
               // trigger: '50%',
               trigger: ['20%', '80%'],
               volume: 0.2,
+              loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
               maxPlaying: 1, // Allow multiple sounds to trigger and play at once
               props: [
@@ -54,36 +55,36 @@
             {
               selector: '.slide-1',
               opacity: {
-                positions: [0, 1],
-                keys: ['0%', '10%'],
+                positions: [0, 1, 1],
+                keys: ['0%', '10%', '100%'],
               },
             },
             {
               selector: '.slide-1-circle',
               scale: {
-                positions: [4, 0],
-                keys: ['0%', '33%'],
+                positions: [4, 0, 0],
+                keys: ['0%', '33%', '100%'],
               },
             },
             {
               selector: '.slide-2',
               opacity: {
-                positions: [0, 0, 1],
-                keys: ['0%', '33%', '43%'],
+                positions: [0, 0, 1, 1],
+                keys: ['0%', '33%', '43%', '100%'],
               },
             },
             {
               selector: '.slide-2-circle',
               scale: {
-                positions: [4, 4, 0],
-                keys: ['0%', '33%', '66%'],
+                positions: [4, 4, 0, 0],
+                keys: ['0%', '33%', '66%', '100%'],
               },
             },
             {
               selector: '.slide-3',
               opacity: {
-                positions: [0, 0, 1],
-                keys: ['0%', '66%', '73%'],
+                positions: [0, 0, 1, 1],
+                keys: ['0%', '66%', '73%', '100%'],
               },
             },
             {

@@ -37,6 +37,12 @@ export const calcPropValue = (
     let startValue;
     let endValue;
     if (property instanceof Array === false) {
+      // TODO:: we calculate a NaN for value if last index hasn't been suppled in
+      // props. EG: ['0%', '33%', '43%'] vs ['0%', '33%', '43%', '100%],
+      // opacity: {
+      //   positions: [0, 0, 1],
+      //   keys: ['0%', '33%', '43%'],
+      // },
       while (currentKey < property.keys.length - 1) {
         if (
           sceneProgress >= property.keys[currentKey] &&
