@@ -4,7 +4,8 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background-color: yellow;
+  background-color: rgb(11, 237, 165);
+  overflow: hidden;
 }
 
 .slide {
@@ -36,28 +37,28 @@
 }
 
 .slide-1 {
-  background-color: red;
-  color: red;
+  background-color: rgb(67, 58, 167);
+  color: rgb(67, 58, 167);
 }
 
 .slide-1-circle {
-  background-color: yellow;
+  background-color: rgb(11, 237, 165);
 }
 
 .slide-2 {
-  background-color: blue;
-  color: blue;
+  background-color: rgb(255, 145, 19);
+  color: rgb(255, 145, 19);
 }
 
 .slide-2-circle {
-  background-color: red;
+  background-color: rgb(67, 58, 167);
 }
 
 .slide-3 {
-  background-color: green;
-  color: green;
+  background-color: rgb(128, 0, 53);
+  color: rgb(128, 0, 53);
 }
 
 .slide-3-circle {
-  background-color: blue;
+  background-color: rgb(255, 145, 19);
 }

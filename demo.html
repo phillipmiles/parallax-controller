@@ -33,9 +33,27 @@
           duration: '300%',
           audio: [
             {
-              src: 'assets/sfx/rocky.wav',
+              src: 'assets/sfx/water.mp3',
               // trigger: '50%',
-              trigger: ['20%', '80%'],
+              trigger: ['0%', '30%'],
+              volume: 0.2,
+              loop: true,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [0, 1, 1, 0, 0],
+                  keys: ['0%', '5%', '14%', '32%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+            {
+              src: 'assets/sfx/earth.wav',
+              // trigger: '50%',
+              trigger: ['20%', '70%'],
               volume: 0.2,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -45,7 +63,25 @@
                   id: 'fadeInOut',
                   type: 'gain',
                   values: [0, 0, 1, 1, 0, 0],
-                  keys: ['0%', '27%', '35%', '55%', '64%', '100%'],
+                  keys: ['0%', '30%', '37%', '55%', '64%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+            {
+              src: 'assets/sfx/fire.wav',
+              // trigger: '50%',
+              trigger: ['50%', '100%'],
+              volume: 0.2,
+              loop: true,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [0, 0, 1, 1, 0],
+                  keys: ['0%', '63%', '70%', '80%', '100%'],
                   isMotionControlled: true,
                 },
               ],
