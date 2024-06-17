@@ -145,7 +145,7 @@ export const initEffectNodes = (audioObj, relativeProgress) => {
   return effectNodes;
 };
 
-export const triggerAudioSource = (audioObj, relativeProgress) => {
+export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
   const sourceNode = initAudioSource(
     audioObj.sample.context,
     audioObj.sample.buffer,
@@ -170,8 +170,49 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
   // Store source so we can keep track of how many we're playing.
   audioObj.sample.sources.unshift(source);
 
-  // Play source
-  sourceNode.start();
+  if (audioObj.bpm) {
+    const beatsPerSecond = audioObj.bpm / 60;
+    const secondsInBeat = 1 / beatsPerSecond;
+
+    const time = timeElapsed;
+    // console.log(secondsTillBeat);
+    // const secondsTillBeat = 4.737; // Seconds in measure
+    // const nextBeatAt = Math.ceil(time / secondsTillBeat) * secondsTillBeat;
+
+    // const nextBeatIn = nextBeatAt - time;
+    const progressThroughBeat = time % secondsInBeat;
+    const nextBeatIn = secondsInBeat - progressThroughBeat;
+
+    // const adjustForContext = nextBeatIn;
+    console.log(
+      timeElapsed,
+      audioObj.sample.context.currentTime,
+      time,
+      beatsPerSecond,
+      progressThroughBeat,
+      secondsInBeat,
+      nextBeatIn
+      // nextBeatAt
+      // 'bps:',
+      // beatsPerSecond,
+      // 'stb',
+      // secondsTillBeat,
+      // 'nextBeat',
+      // nextBeatAt,
+      // 'nextBeatIn',
+      // nextBeatIn,
+      // audioObj.sample.context.currentTime
+    );
+    sourceNode.start(audioObj.sample.context.currentTime + nextBeatIn);
+    // console.log(
+    //   'audioCtx.currentTime',
+    //   audioObj.sample.context.currentTime,
+    //   secondsPerBeat
+    // );
+  } else {
+    // Play source
+    sourceNode.start();
+  }
   // Remove reference to source once its finished playing
   sourceNode.addEventListener('ended', (event) => {
     const sourceIndex = audioObj.sample.sources.findIndex(
@@ -179,6 +220,17 @@ export const triggerAudioSource = (audioObj, relativeProgress) => {
     );
     audioObj.sample.sources.splice(sourceIndex, 1);
   });
+};
+
+const scheduler = () => {
+  // let timerID;
+  // // While there are notes that will need to play before the next interval,
+  // // schedule them and advance the pointer.
+  // while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+  //   scheduleNote(currentNote, nextNoteTime);
+  //   nextNote();
+  // }
+  // timerID = setTimeout(scheduler, lookahead);
 };
 
 export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
@@ -226,7 +278,8 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
 export const manageSceneAudio = (
   scene: scene,
   sceneScrollTop,
-  prevScrollTop
+  prevScrollTop,
+  timeElapsed: number
 ) => {
   if (!scene.audio) return;
 
@@ -260,7 +313,7 @@ export const manageSceneAudio = (
           !audioObj.maxPlaying ||
           audioObj.maxPlaying > audioObj.sample.sources.length
         ) {
-          triggerAudioSource(audioObj, relativeProgress);
+          triggerAudioSource(audioObj, relativeProgress, timeElapsed);
         }
       } else {
         console.warn('Attempted to trigger audio source but no sample found.');

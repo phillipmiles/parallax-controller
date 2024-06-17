@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Parallax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/style-music.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="build/parallax.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="container">
+        <div class="song-menu">
+          <h3>Intro</h3>
+          <h3>Waiting</h3>
+          <h3>Ramp up</h3>
+          <h3>Still</h3>
+          <h3>Lets go</h3>
+          <h3>Simmer down</h3>
+        </div>
+        <div class="metronome active"></div>
+      </div>
+    </div>
+
+    <script>
+      var scenes = [
+        {
+          wrapper: '#stage',
+          duration: '300%',
+          schedulers: [
+            {
+              id: 'songScheduler',
+              bpm: 152,
+            },
+          ],
+          audio: [
+            {
+              src: 'assets/music/count-in.mp3',
+              scheduler: 'songScheduler',
+              trigger: ['0%', '50%'],
+              bpm: 110,
+              volume: 1,
+              loop: true,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [1, 1, 0, 0],
+                  keys: ['0%', '50%', '51%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+            {
+              src: 'assets/music/count-in.mp3',
+              scheduler: 'songScheduler',
+              trigger: ['50%', '100%'],
+              // bpm: 110,
+              bpm: 110,
+              volume: 1,
+              loop: true,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [0, 0, 1, 1],
+                  keys: ['0%', '49%', '50%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+          ],
+          animations: [],
+        },
+      ];
+
+      // const run = () => {
+
+      const control = parallax.parallaxController(scenes, {
+        scrollRestoration: true,
+      });
+      console.log(scenes);
+
+      const turnOnAudio = () => {
+        console.log('enable audioop');
+        control.enableAudio();
+      };
+
+      document.body.addEventListener('click', turnOnAudio);
+      // console.log(parallax)
+      // }
+      // document.addEventListener('DOMContentLoaded', run, false);
+
+      // console.log('rgun');
+      // var scrollIntervalID = setInterval(updateDebugger, 10);
+
+      //function updateDebugger() {
+      //    console.log(pc.getCurrentKeyframe());
+      //}
+    </script>
+  </body>
+</html>

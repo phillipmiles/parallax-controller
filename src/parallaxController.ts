@@ -10,7 +10,16 @@ interface config {
   scrollRestoration: boolean;
 }
 
+// const initSchedulers = (schedulers) => {
+//   schedulers.forEach(scheduler => {
+//     scheduler.
+//   })
+// };
+
 export const parallaxController = (scenes, config: config) => {
+  let audioEnabled = false;
+  let startTime = new Date();
+
   var windowHeight = 0,
     windowWidth = 0,
     bodyHeight = 0,
@@ -45,13 +54,14 @@ export const parallaxController = (scenes, config: config) => {
     totalDuration = getTotalDuration(scenes);
 
     buildPage();
+    // initSchedulers(scenes.schedulers);
 
     // Set every element to their correct positions. We have to set
     // this page even if scroll restoration is true because the scroll
     // listener wont fire if scroll position is at the top of the page
     // already.
     setPage();
-    initPageAudio(scenes);
+    // initPageAudio(scenes); // moved to enable audio function
 
     // If scroll restoration is true then we need to listen to the
     // scroll event to be avaiable before getting the scroll position
@@ -136,10 +146,17 @@ export const parallaxController = (scenes, config: config) => {
   }
 
   function updatePage() {
-    setScene();
+    const currentTime = new Date();
+    const timeElapsed = (currentTime.getTime() - startTime.getTime()) / 1000;
+
     setScrollTops();
     animateElements();
-    manageSceneAudio(scenes[currentScene], relativeScrollTop, prevScrollTop);
+    manageSceneAudio(
+      scenes[currentScene],
+      relativeScrollTop,
+      prevScrollTop,
+      timeElapsed
+    );
     ticking = false;
   }
 
@@ -444,6 +461,12 @@ export const parallaxController = (scenes, config: config) => {
 
     stop: function () {
       console.log('Public stoping');
+    },
+
+    enableAudio: () => {
+      console.log('ENABMELD');
+      audioEnabled = true;
+      initPageAudio(scenes);
     },
   };
 };
