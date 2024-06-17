@@ -37,8 +37,8 @@
             {
               src: 'assets/music/count-in.mp3',
               scheduler: 'songScheduler',
-              trigger: ['0%', '50%'],
-              bpm: 110,
+              trigger: ['0%', '40%'],
+              bpm: 27.5,
               volume: 1,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -48,17 +48,37 @@
                   id: 'fadeInOut',
                   type: 'gain',
                   values: [1, 1, 0, 0],
-                  keys: ['0%', '50%', '51%', '100%'],
+                  keys: ['0%', '35%', '40%', '100%'],
                   isMotionControlled: true,
                 },
               ],
             },
             {
-              src: 'assets/music/count-in.mp3',
+              src: 'assets/music/intro-loop.mp3',
               scheduler: 'songScheduler',
-              trigger: ['50%', '100%'],
+              trigger: ['30%', '70%'],
               // bpm: 110,
-              bpm: 110,
+              bpm: 27.5,
+              volume: 1,
+              loop: true,
+              triggerDirection: 'both', // Direction of scroll trigger
+              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
+              props: [
+                {
+                  id: 'fadeInOut',
+                  type: 'gain',
+                  values: [0, 0, 1, 1, 0, 0],
+                  keys: ['0%', '30%', '35%', '65%', '70%', '100%'],
+                  isMotionControlled: true,
+                },
+              ],
+            },
+            {
+              src: 'assets/music/verse-1.mp3',
+              scheduler: 'songScheduler',
+              trigger: ['60%', '100%'],
+              // bpm: 110,
+              bpm: 27.5,
               volume: 1,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -68,7 +88,7 @@
                   id: 'fadeInOut',
                   type: 'gain',
                   values: [0, 0, 1, 1],
-                  keys: ['0%', '49%', '50%', '100%'],
+                  keys: ['0%', '60%', '65%', '100%'],
                   isMotionControlled: true,
                 },
               ],
