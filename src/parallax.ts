@@ -55,8 +55,8 @@ export const convertScenePropsToPx = (scene) => {
       audioObj.start = calcPercentOfValue(audioObj.start, scene.duration);
       audioObj.stop = calcPercentOfValue(audioObj.stop, scene.duration);
 
-      audioObj.trigger = convertAudioTriggerToPx(
-        audioObj.trigger,
+      audioObj.triggerStart = convertAudioTriggerToPx(
+        audioObj.triggerStart,
         scene.duration
       );
 

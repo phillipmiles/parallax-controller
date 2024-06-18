@@ -35,7 +35,7 @@
             {
               src: 'assets/sfx/water.mp3',
               // trigger: '50%',
-              trigger: ['0%', '30%'],
+              triggerStart: ['0%', '30%'],
               volume: 0.2,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -53,7 +53,7 @@
             {
               src: 'assets/sfx/earth.wav',
               // trigger: '50%',
-              trigger: ['20%', '70%'],
+              triggerStart: ['20%', '70%'],
               volume: 0.2,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -71,7 +71,7 @@
             {
               src: 'assets/sfx/fire.wav',
               // trigger: '50%',
-              trigger: ['50%', '100%'],
+              triggerStart: ['50%', '100%'],
               volume: 0.2,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -145,7 +145,7 @@
         control.enableAudio();
       };
 
-      window.addEventListener('onclick', turnOnAudio);
+      document.body.addEventListener('click', turnOnAudio);
       // console.log(parallax)
       // }
       // document.addEventListener('DOMContentLoaded', run, false);

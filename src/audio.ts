@@ -222,11 +222,11 @@ const scheduler = () => {
 };
 
 export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
-  if (typeof audioObj.trigger === 'string') {
+  if (typeof audioObj.triggerStart === 'string') {
     return triggeredByDirection(
       currentPos,
       prevPos,
-      audioObj.trigger,
+      audioObj.triggerStart,
       audioObj.triggerDirection
     );
   } else {
@@ -234,14 +234,14 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
       return triggeredByDirection(
         currentPos,
         prevPos,
-        audioObj.trigger[0],
+        audioObj.triggerStart[0],
         'forwards'
       );
     } else if (audioObj.triggerDirection === 'backwards') {
       return triggeredByDirection(
         currentPos,
         prevPos,
-        audioObj.trigger[1],
+        audioObj.triggerStart[1],
         'backwards'
       );
     } else {
@@ -249,13 +249,13 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
         triggeredByDirection(
           currentPos,
           prevPos,
-          audioObj.trigger[0],
+          audioObj.triggerStart[0],
           'forwards'
         ) ||
         triggeredByDirection(
           currentPos,
           prevPos,
-          audioObj.trigger[1],
+          audioObj.triggerStart[1],
           'backwards'
         )
       );
@@ -281,6 +281,7 @@ export const updateAudio = (
       : prevScrollTop[0];
 
   if (audioObj.props) {
+    console.log(audioObj);
     applyAudioProps(audioObj, relativeProgress);
   }
 
@@ -331,7 +332,7 @@ export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
     scene.audio.forEach(async (audioObj) => {
       await initAudioSample(audioObj);
 
-      if (audioObj.trigger instanceof Array) {
+      if (audioObj.triggerStart instanceof Array) {
         const relativeProgress =
           audioObj.start && typeof audioObj.start === 'number'
             ? sceneScrollTop - audioObj.start
@@ -339,8 +340,8 @@ export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
 
         // Check if we currently sit within trigger range
         if (
-          audioObj.trigger[0] <= relativeProgress &&
-          audioObj.trigger[1] >= relativeProgress
+          audioObj.triggerStart[0] <= relativeProgress &&
+          audioObj.triggerStart[1] >= relativeProgress
         ) {
           if (checkCanTriggerAudio(audioObj)) {
             const elapsedTime = getTimeCallback();

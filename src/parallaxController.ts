@@ -472,7 +472,6 @@ export const parallaxController = (scenes, config: config) => {
 
       audioEnabled = true;
 
-      // const elapsedTime = getElapsedTime();
       initPageAudio(scenes, relativeScrollTop, getElapsedTime);
     },
   };
