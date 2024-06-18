@@ -27,36 +27,24 @@
         {
           wrapper: '#stage',
           duration: '300%',
-          schedulers: [
-            {
-              id: 'songScheduler',
-              bpm: 152,
-            },
-          ],
           audio: [
             {
               src: 'assets/music/count-in.mp3',
-              scheduler: 'songScheduler',
+              loopSrc: 'assets/music/count-in.mp3', // plays src but play loop enabled
+              sequenceGroup: 'song', // Find other audios with same sequence group, look to them for trigger stops and starts
+              sequenceInterval: 4000,
               triggerStart: ['0%', '33%'],
               triggerStop: '33%',
               bpm: 27.5,
               volume: 1,
               loop: true,
-              triggerDirection: 'both', // Direction of scroll trigger
-              maxPlaying: 1, // Allow multiple sounds to trigger and play at once
-              props: [
-                // {
-                //   id: 'fadeInOut',
-                //   type: 'gain',
-                //   values: [1, 1, 0, 0],
-                //   keys: ['0%', '35%', '40%', '100%'],
-                //   isMotionControlled: true,
-                // },
-              ],
+              triggerDirection: 'both',
+              maxPlaying: 1,
+              props: [],
             },
             {
               src: 'assets/music/intro-loop.mp3',
-              scheduler: 'songScheduler',
+              sequenceGroup: 'song',
               triggerStart: ['33%', '66%'],
               triggerStop: ['33%', '66%'],
               // bpm: 110,
@@ -77,7 +65,7 @@
             },
             {
               src: 'assets/music/verse-1.mp3',
-              scheduler: 'songScheduler',
+              sequenceGroup: 'song',
               triggerStart: ['66%', '100%'],
               triggerStop: '66%',
               // bpm: 110,

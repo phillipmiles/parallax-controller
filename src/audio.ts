@@ -174,12 +174,39 @@ export const initAudioSource = (audioObj, relativeProgress) => {
   return source;
 };
 
-export const triggerAudioSource = (audioObj, audioSource, timeElapsed) => {
-  if (audioObj.bpm) {
-    const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed);
-    audioSource.sourceNode.start(
-      audioObj.sample.context.currentTime + nextBeatIn
-    );
+export const getNextSequenceTime = (scene, audioObj, timeElapsed) => {
+  // console.log(scene);
+  // const sequence = scene.audio.filter(
+  //   (otherAudioObj) => otherAudioObj.sequenceGroup === audioObj.sequenceGroup
+  // );
+
+  const timeStarted = scene._sequences[audioObj.sequenceGroup]
+    ? scene._sequences[audioObj.sequenceGroup]._timeStarted
+    : 0;
+
+  console.log('timeStarted', timeStarted);
+  // const relativeTime = timeElapsed
+  const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed - timeStarted);
+
+  return nextBeatIn;
+};
+
+export const triggerAudioSource = (
+  scene,
+  audioObj,
+  audioSource,
+  timeElapsed,
+  when = 0
+) => {
+  if (!scene._sequences[audioObj.sequenceGroup]) {
+    scene._sequences[audioObj.sequenceGroup] = {
+      _timeStarted: timeElapsed,
+    };
+  }
+  audioObj._timeStarted = timeElapsed;
+
+  if (when) {
+    audioSource.sourceNode.start(audioObj.sample.context.currentTime + when);
   } else {
     // Play source
     audioSource.sourceNode.start();
@@ -259,11 +286,14 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
   }
 };
 
-export const stopAudioSamples = (audioObj, timeElapsed) => {
-  console.log(audioObj.sample);
-  const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed);
+export const stopAudioSamples = (audioObj, timeElapsed, when) => {
   audioObj.sample.sources.forEach((source) => {
-    source.sourceNode.stop(audioObj.sample.context.currentTime + nextBeatIn);
+    if (when) {
+      source.sourceNode.stop(audioObj.sample.context.currentTime + when);
+    } else {
+      // Play source
+      source.sourceNode.stop();
+    }
   });
 };
 
@@ -300,14 +330,28 @@ export const updateAudio = (
     )
   ) {
     console.log('STOP', audioObj.src);
-    stopAudioSamples(audioObj, timeElapsed);
+    let when = 0;
+    if (audioObj.sequenceGroup) {
+      // Fetch timeToStart
+      when = getNextSequenceTime(scene, audioObj, timeElapsed);
+    }
+
+    stopAudioSamples(audioObj, timeElapsed, when);
   }
   if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
     if (checkCanTriggerAudio(audioObj)) {
       const audioSource = initAudioSource(audioObj, relativeProgress);
       // Store source so we can keep track of how many we're playing.
       audioObj.sample.sources.unshift(audioSource);
-      triggerAudioSource(audioObj, audioSource, timeElapsed);
+
+      let when = 0;
+      if (audioObj.sequenceGroup) {
+        // Fetch timeToStart
+        console.log('START');
+        when = getNextSequenceTime(scene, audioObj, timeElapsed);
+      }
+
+      triggerAudioSource(scene, audioObj, audioSource, timeElapsed, when);
     }
   }
 
@@ -365,7 +409,8 @@ export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
             // Store source so we can keep track of how many we're playing.
             audioObj.sample.sources.unshift(audioSource);
             const elapsedTime = getTimeCallback();
-            triggerAudioSource(audioObj, audioSource, elapsedTime);
+
+            triggerAudioSource(scene, audioObj, audioSource, elapsedTime, 0);
           }
         }
       }

@@ -50,6 +50,7 @@ export const parallaxController = (scenes, config: config) => {
     convertScenesPropsToPx(scenes);
     scenes.forEach((scene) => {
       convertSceneShorthandProps(scene);
+      scene._sequences = {};
     });
     totalDuration = getTotalDuration(scenes);
 
