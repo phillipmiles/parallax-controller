@@ -18,7 +18,7 @@ export interface prop {
 export interface audio {
   src: string;
   sample: {
-    state: string;
+    // state: string;
     context: AudioContext;
     buffer: AudioBuffer;
     sources: AudioBufferSourceNode[];

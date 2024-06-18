@@ -11,22 +11,14 @@ const getAudioFile = async (audioContext, filepath) => {
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Advanced_techniques#dial_up_%E2%80%94_loading_a_sound_sample
 const initAudioSample = async (audioObj: audio) => {
   const audioCtx = new AudioContext();
-  audioCtx.onstatechange = () => {
-    console.log('state2', audioCtx.state);
-  };
+
   audioObj.sample = {
-    state: 'loading',
-    context: null,
+    context: audioCtx,
     buffer: null,
     sources: [],
   };
   const audioBuffer = await getAudioFile(audioCtx, audioObj.src);
-  audioObj.sample = {
-    state: 'ready',
-    context: audioCtx,
-    buffer: audioBuffer,
-    sources: [],
-  };
+  audioObj.sample.buffer = audioBuffer;
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
@@ -175,11 +167,7 @@ export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
     const secondsInBeat = 1 / beatsPerSecond;
 
     const time = timeElapsed;
-    // console.log(secondsTillBeat);
-    // const secondsTillBeat = 4.737; // Seconds in measure
-    // const nextBeatAt = Math.ceil(time / secondsTillBeat) * secondsTillBeat;
 
-    // const nextBeatIn = nextBeatAt - time;
     const progressThroughBeat = time % secondsInBeat;
     const nextBeatIn = secondsInBeat - progressThroughBeat;
 
@@ -275,6 +263,51 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
   }
 };
 
+export const updateAudio = (
+  audioObj,
+  sceneScrollTop,
+  prevScrollTop,
+  timeElapsed: number
+) => {
+  // Adjust scroll top to be relative to any start/stop values if availalble.
+  const relativeProgress =
+    audioObj.start && typeof audioObj.start === 'number'
+      ? sceneScrollTop - audioObj.start
+      : sceneScrollTop;
+
+  const prevRelativeProgress =
+    audioObj.start && typeof audioObj.start === 'number'
+      ? prevScrollTop[0] - audioObj.start
+      : prevScrollTop[0];
+
+  if (audioObj.props) {
+    applyAudioProps(audioObj, relativeProgress);
+  }
+
+  // TODO: If range is supplied and a boolean is true make sounds stop
+  // that have left range.
+
+  if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
+    if (checkCanTriggerAudio(audioObj)) {
+      triggerAudioSource(audioObj, relativeProgress, timeElapsed);
+    }
+  }
+
+  // TODO Handle a check here to see if we should start loading the audio on
+  // page load or lazy load it later???
+};
+
+const checkCanTriggerAudio = (audioObj) => {
+  if (!audioObj.sample) return false;
+  if (
+    audioObj.maxPlaying &&
+    audioObj.sample.sources.length >= audioObj.maxPlaying
+  )
+    return false;
+
+  return true;
+};
+
 export const manageSceneAudio = (
   scene: scene,
   sceneScrollTop,
@@ -289,50 +322,38 @@ export const manageSceneAudio = (
 
   // console.log('relativeScrollTop', relativeScrollTop, window.scrollY);
   scene.audio.forEach((audioObj) => {
-    // Adjust scroll top to be relative to any start/stop values if availalble.
-    const relativeProgress =
-      audioObj.start && typeof audioObj.start === 'number'
-        ? sceneScrollTop - audioObj.start
-        : sceneScrollTop;
-
-    const prevRelativeProgress =
-      audioObj.start && typeof audioObj.start === 'number'
-        ? prevScrollTop[0] - audioObj.start
-        : prevScrollTop[0];
-
-    if (audioObj.props) {
-      applyAudioProps(audioObj, relativeProgress);
-    }
-
-    // TODO: If range is supplied and a boolean is true make sounds stop
-    // that have left range.
-
-    if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
-      if (audioObj.sample) {
-        if (
-          !audioObj.maxPlaying ||
-          audioObj.maxPlaying > audioObj.sample.sources.length
-        ) {
-          triggerAudioSource(audioObj, relativeProgress, timeElapsed);
-        }
-      } else {
-        console.warn('Attempted to trigger audio source but no sample found.');
-      }
-    }
-
-    // TODO Handle a check here to see if we should start loading the audio on
-    // page load or lazy load it later???
+    updateAudio(audioObj, sceneScrollTop, prevScrollTop, timeElapsed);
   });
 };
 
-export const initSceneAudio = (scene) => {
+export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
   if (scene.audio) {
-    scene.audio.forEach((audioObj) => {
-      initAudioSample(audioObj);
+    scene.audio.forEach(async (audioObj) => {
+      await initAudioSample(audioObj);
+
+      if (audioObj.trigger instanceof Array) {
+        const relativeProgress =
+          audioObj.start && typeof audioObj.start === 'number'
+            ? sceneScrollTop - audioObj.start
+            : sceneScrollTop;
+
+        // Check if we currently sit within trigger range
+        if (
+          audioObj.trigger[0] <= relativeProgress &&
+          audioObj.trigger[1] >= relativeProgress
+        ) {
+          if (checkCanTriggerAudio(audioObj)) {
+            const elapsedTime = getTimeCallback();
+            triggerAudioSource(audioObj, relativeProgress, elapsedTime);
+          }
+        }
+      }
     });
   }
 };
 
-export const initPageAudio = (scenes) => {
-  scenes.forEach((scene) => initSceneAudio(scene));
+export const initPageAudio = (scenes, sceneScrollTop, getTimeCallback) => {
+  scenes.forEach((scene) =>
+    initSceneAudio(scene, sceneScrollTop, getTimeCallback)
+  );
 };

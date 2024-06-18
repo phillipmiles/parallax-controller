@@ -146,8 +146,7 @@ export const parallaxController = (scenes, config: config) => {
   }
 
   function updatePage() {
-    const currentTime = new Date();
-    const timeElapsed = (currentTime.getTime() - startTime.getTime()) / 1000;
+    const timeElapsed = getElapsedTime();
 
     setScrollTops();
     animateElements();
@@ -205,6 +204,11 @@ export const parallaxController = (scenes, config: config) => {
       );
     }
   }
+
+  const getElapsedTime = () => {
+    const currentTime = new Date();
+    return (currentTime.getTime() - startTime.getTime()) / 1000;
+  };
 
   // This is intended to run at the end of a scene forcing all animations to reach their
   // end positions, a necessary function due to intentional frame skips leaving objects in the wrong
@@ -464,9 +468,12 @@ export const parallaxController = (scenes, config: config) => {
     },
 
     enableAudio: () => {
-      console.log('ENABMELD');
+      if (audioEnabled) return;
+
       audioEnabled = true;
-      initPageAudio(scenes);
+
+      // const elapsedTime = getElapsedTime();
+      initPageAudio(scenes, relativeScrollTop, getElapsedTime);
     },
   };
 };
