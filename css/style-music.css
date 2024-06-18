@@ -35,7 +35,7 @@
 
 .metronome.active {
   animation-name: bounce;
-  animation-duration: 600ms;
+  animation-duration: 550ms;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }

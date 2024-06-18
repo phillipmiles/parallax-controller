@@ -59,6 +59,12 @@ export const convertScenePropsToPx = (scene) => {
         audioObj.triggerStart,
         scene.duration
       );
+      if (audioObj.triggerStop) {
+        audioObj.triggerStop = convertAudioTriggerToPx(
+          audioObj.triggerStop,
+          scene.duration
+        );
+      }
 
       const propDuration =
         audioObj.start && audioObj.stop

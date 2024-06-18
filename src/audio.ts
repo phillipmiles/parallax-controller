@@ -137,6 +137,18 @@ export const initEffectNodes = (audioObj, relativeProgress) => {
   return effectNodes;
 };
 
+const timeTillSchedule = (bpm, timeElapsed) => {
+  const beatsPerSecond = bpm / 60;
+  const secondsInBeat = 1 / beatsPerSecond;
+
+  const time = timeElapsed;
+
+  const progressThroughBeat = time % secondsInBeat;
+  const nextBeatIn = secondsInBeat - progressThroughBeat;
+
+  return nextBeatIn;
+};
+
 export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
   const sourceNode = initAudioSource(
     audioObj.sample.context,
@@ -163,40 +175,8 @@ export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
   audioObj.sample.sources.unshift(source);
 
   if (audioObj.bpm) {
-    const beatsPerSecond = audioObj.bpm / 60;
-    const secondsInBeat = 1 / beatsPerSecond;
-
-    const time = timeElapsed;
-
-    const progressThroughBeat = time % secondsInBeat;
-    const nextBeatIn = secondsInBeat - progressThroughBeat;
-
-    // const adjustForContext = nextBeatIn;
-    console.log(
-      timeElapsed,
-      audioObj.sample.context.currentTime,
-      time,
-      beatsPerSecond,
-      progressThroughBeat,
-      secondsInBeat,
-      nextBeatIn
-      // nextBeatAt
-      // 'bps:',
-      // beatsPerSecond,
-      // 'stb',
-      // secondsTillBeat,
-      // 'nextBeat',
-      // nextBeatAt,
-      // 'nextBeatIn',
-      // nextBeatIn,
-      // audioObj.sample.context.currentTime
-    );
+    const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed);
     sourceNode.start(audioObj.sample.context.currentTime + nextBeatIn);
-    // console.log(
-    //   'audioCtx.currentTime',
-    //   audioObj.sample.context.currentTime,
-    //   secondsPerBeat
-    // );
   } else {
     // Play source
     sourceNode.start();
@@ -219,6 +199,19 @@ const scheduler = () => {
   //   nextNote();
   // }
   // timerID = setTimeout(scheduler, lookahead);
+};
+
+export const checkIfTriggeredStop = (triggerStop, currentPos, prevPos) => {
+  if (!triggerStop) return;
+
+  if (typeof triggerStop === 'number') {
+    return triggeredByDirection(currentPos, prevPos, triggerStop, 'both');
+  } else {
+    return (
+      triggeredByDirection(currentPos, prevPos, triggerStop[0], 'backwards') ||
+      triggeredByDirection(currentPos, prevPos, triggerStop[1], 'forwards')
+    );
+  }
 };
 
 export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
@@ -263,6 +256,14 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
   }
 };
 
+export const stopAudioSamples = (audioObj, timeElapsed) => {
+  console.log(audioObj.sample);
+  const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed);
+  audioObj.sample.sources.forEach((source) => {
+    source.sourceNode.stop(audioObj.sample.context.currentTime + nextBeatIn);
+  });
+};
+
 export const updateAudio = (
   audioObj,
   sceneScrollTop,
@@ -281,13 +282,22 @@ export const updateAudio = (
       : prevScrollTop[0];
 
   if (audioObj.props) {
-    console.log(audioObj);
     applyAudioProps(audioObj, relativeProgress);
   }
 
   // TODO: If range is supplied and a boolean is true make sounds stop
   // that have left range.
 
+  if (
+    checkIfTriggeredStop(
+      audioObj.triggerStop,
+      relativeProgress,
+      prevRelativeProgress
+    )
+  ) {
+    console.log('STOP', audioObj.src);
+    stopAudioSamples(audioObj, timeElapsed);
+  }
   if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
     if (checkCanTriggerAudio(audioObj)) {
       triggerAudioSource(audioObj, relativeProgress, timeElapsed);
