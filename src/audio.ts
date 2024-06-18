@@ -22,7 +22,7 @@ const initAudioSample = async (audioObj: audio) => {
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
-const initAudioSource = (audioContext, audioBuffer, options) => {
+const initAudioSourceNode = (audioContext, audioBuffer, options) => {
   const sampleSource = new AudioBufferSourceNode(audioContext, {
     buffer: audioBuffer,
     loop: options.loop ? options.loop : false,
@@ -149,8 +149,8 @@ const timeTillSchedule = (bpm, timeElapsed) => {
   return nextBeatIn;
 };
 
-export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
-  const sourceNode = initAudioSource(
+export const initAudioSource = (audioObj, relativeProgress) => {
+  const sourceNode = initAudioSourceNode(
     audioObj.sample.context,
     audioObj.sample.buffer,
     {
@@ -171,18 +171,21 @@ export const triggerAudioSource = (audioObj, relativeProgress, timeElapsed) => {
     sourceNode: sourceNode,
     effectNodes: effectNodes,
   };
-  // Store source so we can keep track of how many we're playing.
-  audioObj.sample.sources.unshift(source);
+  return source;
+};
 
+export const triggerAudioSource = (audioObj, audioSource, timeElapsed) => {
   if (audioObj.bpm) {
     const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed);
-    sourceNode.start(audioObj.sample.context.currentTime + nextBeatIn);
+    audioSource.sourceNode.start(
+      audioObj.sample.context.currentTime + nextBeatIn
+    );
   } else {
     // Play source
-    sourceNode.start();
+    audioSource.sourceNode.start();
   }
   // Remove reference to source once its finished playing
-  sourceNode.addEventListener('ended', (event) => {
+  audioSource.sourceNode.addEventListener('ended', (event) => {
     const sourceIndex = audioObj.sample.sources.findIndex(
       (item) => item.sourceNode === event.target
     );
@@ -265,6 +268,7 @@ export const stopAudioSamples = (audioObj, timeElapsed) => {
 };
 
 export const updateAudio = (
+  scene,
   audioObj,
   sceneScrollTop,
   prevScrollTop,
@@ -300,7 +304,10 @@ export const updateAudio = (
   }
   if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
     if (checkCanTriggerAudio(audioObj)) {
-      triggerAudioSource(audioObj, relativeProgress, timeElapsed);
+      const audioSource = initAudioSource(audioObj, relativeProgress);
+      // Store source so we can keep track of how many we're playing.
+      audioObj.sample.sources.unshift(audioSource);
+      triggerAudioSource(audioObj, audioSource, timeElapsed);
     }
   }
 
@@ -333,7 +340,7 @@ export const manageSceneAudio = (
 
   // console.log('relativeScrollTop', relativeScrollTop, window.scrollY);
   scene.audio.forEach((audioObj) => {
-    updateAudio(audioObj, sceneScrollTop, prevScrollTop, timeElapsed);
+    updateAudio(scene, audioObj, sceneScrollTop, prevScrollTop, timeElapsed);
   });
 };
 
@@ -354,8 +361,11 @@ export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
           audioObj.triggerStart[1] >= relativeProgress
         ) {
           if (checkCanTriggerAudio(audioObj)) {
+            const audioSource = initAudioSource(audioObj, relativeProgress);
+            // Store source so we can keep track of how many we're playing.
+            audioObj.sample.sources.unshift(audioSource);
             const elapsedTime = getTimeCallback();
-            triggerAudioSource(audioObj, relativeProgress, elapsedTime);
+            triggerAudioSource(audioObj, audioSource, elapsedTime);
           }
         }
       }
