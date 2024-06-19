@@ -11,7 +11,7 @@
     <div id="stage">
       <div class="container">
         <div class="song-menu">
-          <h3 class="menu-1">Count in</h3>
+          <h3 class="menu-1">1, 2, 3, 4</h3>
           <h3 class="menu-2">Intro</h3>
           <h3 class="menu-3">Verse 1</h3>
           <h3>...</h3>
@@ -32,10 +32,10 @@
               src: 'assets/music/count-in.mp3',
               loopSrc: 'assets/music/count-in.mp3', // plays src but play loop enabled
               sequenceGroup: 'song', // Find other audios with same sequence group, look to them for trigger stops and starts
-              sequenceInterval: 4000,
+              sequenceInterval: 4, // 1 / (110bpm / 60) = 0.5454 * 4 beats = 2181.8
               triggerStart: ['0%', '33%'],
               triggerStop: '33%',
-              bpm: 27.5,
+              bpm: 110,
               volume: 1,
               loop: true,
               triggerDirection: 'both',
@@ -47,8 +47,9 @@
               sequenceGroup: 'song',
               triggerStart: ['33%', '66%'],
               triggerStop: ['33%', '66%'],
+              sequenceInterval: 8,
               // bpm: 110,
-              bpm: 27.5,
+              bpm: 110,
               volume: 1,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
@@ -66,10 +67,11 @@
             {
               src: 'assets/music/verse-1.mp3',
               sequenceGroup: 'song',
+              sequenceInterval: 16,
               triggerStart: ['66%', '100%'],
               triggerStop: '66%',
-              // bpm: 110,
-              bpm: 27.5,
+              bpm: 110,
+              // bpm: 27.5,
               volume: 1,
               loop: true,
               triggerDirection: 'both', // Direction of scroll trigger
