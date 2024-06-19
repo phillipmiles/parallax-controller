@@ -184,7 +184,6 @@ export const getNextSequenceTime = (scene, audioObj, timeElapsed) => {
     ? scene._sequences[audioObj.sequenceGroup]._timeStarted
     : 0;
 
-  console.log('timeStarted', timeStarted);
   // const relativeTime = timeElapsed
   const nextBeatIn = timeTillSchedule(audioObj.bpm, timeElapsed - timeStarted);
 
@@ -204,7 +203,7 @@ export const triggerAudioSource = (
     };
   }
   audioObj._timeStarted = timeElapsed;
-
+  audioSource.state = 'playing';
   if (when) {
     audioSource.sourceNode.start(audioObj.sample.context.currentTime + when);
   } else {
@@ -296,6 +295,7 @@ export const stopAudioSamples = (audioObj, timeElapsed, when) => {
   // to access the interval for the trigger song to use in this function
   // in order to schedule stop...
   audioObj.sample.sources.forEach((source) => {
+    source.state = 'expired';
     if (when) {
       source.sourceNode.stop(audioObj.sample.context.currentTime + when);
     } else {
@@ -339,7 +339,7 @@ export const updateAudio = (
       let when = 0;
       if (audioObj.sequenceGroup) {
         // Fetch timeToStart
-        console.log('START');
+
         when = getNextSequenceTime(scene, audioObj, timeElapsed);
       }
 
@@ -357,7 +357,7 @@ export const updateAudio = (
       // Fetch timeToStart
       when = getNextSequenceTime(scene, audioObj, timeElapsed);
     }
-
+    console.log('STOP', audioObj.src);
     stopAudioSamples(audioObj, timeElapsed, when);
   }
 
@@ -367,10 +367,11 @@ export const updateAudio = (
 
 const checkCanTriggerAudio = (audioObj) => {
   if (!audioObj.sample) return false;
-  if (
-    audioObj.maxPlaying &&
-    audioObj.sample.sources.length >= audioObj.maxPlaying
-  )
+
+  const playingSources = audioObj.sample.sources.filter(
+    (source) => source.state === 'playing'
+  );
+  if (audioObj.maxPlaying && playingSources.length >= audioObj.maxPlaying)
     return false;
 
   return true;
