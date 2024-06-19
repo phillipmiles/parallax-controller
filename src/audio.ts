@@ -287,11 +287,19 @@ export const checkIfTriggered = (audioObj, currentPos, prevPos) => {
 };
 
 export const stopAudioSamples = (audioObj, timeElapsed, when) => {
+  // TODO:: Need to clear scheduled stop if we've scrolled back into same zone
+  // Maybe store a state saying this audioObj is scheduled to end and then
+  // on trigger functions looks for that and if its there clear schedule.
+
+  // TODO:: Also need to save current schedule interval in the _schedule prop
+  // to use as reference for when to trigger next song. Um also somehow need
+  // to access the interval for the trigger song to use in this function
+  // in order to schedule stop...
   audioObj.sample.sources.forEach((source) => {
     if (when) {
       source.sourceNode.stop(audioObj.sample.context.currentTime + when);
     } else {
-      // Play source
+      // Stop source
       source.sourceNode.stop();
     }
   });
@@ -322,22 +330,6 @@ export const updateAudio = (
   // TODO: If range is supplied and a boolean is true make sounds stop
   // that have left range.
 
-  if (
-    checkIfTriggeredStop(
-      audioObj.triggerStop,
-      relativeProgress,
-      prevRelativeProgress
-    )
-  ) {
-    console.log('STOP', audioObj.src);
-    let when = 0;
-    if (audioObj.sequenceGroup) {
-      // Fetch timeToStart
-      when = getNextSequenceTime(scene, audioObj, timeElapsed);
-    }
-
-    stopAudioSamples(audioObj, timeElapsed, when);
-  }
   if (checkIfTriggered(audioObj, relativeProgress, prevRelativeProgress)) {
     if (checkCanTriggerAudio(audioObj)) {
       const audioSource = initAudioSource(audioObj, relativeProgress);
@@ -353,6 +345,20 @@ export const updateAudio = (
 
       triggerAudioSource(scene, audioObj, audioSource, timeElapsed, when);
     }
+  } else if (
+    checkIfTriggeredStop(
+      audioObj.triggerStop,
+      relativeProgress,
+      prevRelativeProgress
+    )
+  ) {
+    let when = 0;
+    if (audioObj.sequenceGroup) {
+      // Fetch timeToStart
+      when = getNextSequenceTime(scene, audioObj, timeElapsed);
+    }
+
+    stopAudioSamples(audioObj, timeElapsed, when);
   }
 
   // TODO Handle a check here to see if we should start loading the audio on
