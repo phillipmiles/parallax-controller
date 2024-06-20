@@ -155,7 +155,8 @@ export const parallaxController = (scenes, config: config) => {
       scenes[currentScene],
       relativeScrollTop,
       prevScrollTop,
-      timeElapsed
+      timeElapsed,
+      getElapsedTime
     );
     ticking = false;
   }

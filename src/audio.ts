@@ -139,18 +139,21 @@ export const initEffectNodes = (audioObj, relativeProgress) => {
 
 const timeTillSchedule = (
   bpm,
-  baseInterval, // Eg 4 - or 4 beats per bar. Should be settable by user.
   nextScheduleInterval,
-  timeElapsed
+  timeElapsed,
+  delay = 0
 ) => {
   const beatsPerSecond = bpm / 60;
   const secondsInBeat = 1 / beatsPerSecond;
-  const baseIntervalLength = secondsInBeat * baseInterval;
+  // const baseIntervalLength = secondsInBeat * baseInterval;
   const nextScheduleIntervalLength = secondsInBeat * nextScheduleInterval;
+  const delayIntervalLength = secondsInBeat * delay;
+
   // console.log('Check', interval, intervalLength);
-  const time = timeElapsed;
+  const time = timeElapsed - delayIntervalLength;
 
   const progressThroughBeat = time % nextScheduleIntervalLength;
+
   const nextBeatIn = nextScheduleIntervalLength - progressThroughBeat;
 
   return nextBeatIn;
@@ -189,7 +192,6 @@ export const getNextSequenceTime = (
   scene,
   audioObj,
   timeElapsed,
-  baseInterval,
   sequenceInterval
 ) => {
   const timeStarted = scene._sequences[audioObj.sequenceGroup]
@@ -201,7 +203,8 @@ export const getNextSequenceTime = (
     : new Date();
   // const timeThisStarted = audioObj._timeStarted ? audioObj._timeStarted : 0;
 
-  const elapsed = getTimeElapsed(timeLastScheduledStarted, new Date());
+  // const elapsed = getTimeElapsed(timeLastScheduledStarted, new Date());
+  const elapsed = timeElapsed - timeLastScheduledStarted;
   // console.log(
   //   'ts',
   //   timeStarted,
@@ -210,12 +213,13 @@ export const getNextSequenceTime = (
   //   scene._sequences[audioObj.sequenceGroup]._timeStarted
   // );
   // const relativeTime = timeElapsed
+
   const nextBeatIn = timeTillSchedule(
     audioObj.bpm,
-    baseInterval,
     sequenceInterval,
     // timeElapsed - timeStarted
-    elapsed
+    elapsed,
+    audioObj.sequenceDelay
   );
 
   return nextBeatIn;
@@ -226,7 +230,8 @@ export const triggerAudioSource = (
   audioObj,
   audioSource,
   timeElapsed,
-  when = 0
+  when = 0,
+  getTime
 ) => {
   if (!scene._sequences[audioObj.sequenceGroup]) {
     scene._sequences[audioObj.sequenceGroup] = {
@@ -236,13 +241,26 @@ export const triggerAudioSource = (
 
   if (audioObj.sequenceGroup) {
     // Store sequenceInterval for current audio sequence group.
+    scene._sequences[audioObj.sequenceGroup]._nextTime = when + timeElapsed;
     const timeout = setTimeout(() => {
-      console.log('Set', audioObj.sequenceInterval);
+      console.log(
+        'Set',
+        // audioObj.sequenceInterval,
+        timeElapsed,
+        getTime(),
+        scene._sequences[audioObj.sequenceGroup]._nextTime
+        // scene._sequences[audioObj.sequenceGroup]._timeStarted
+      );
       scene._sequences[audioObj.sequenceGroup].currentInterval =
         audioObj.sequenceInterval;
       scene._sequences[audioObj.sequenceGroup]._timeLastScheduledStarted =
-        new Date();
+        getTime();
+      // scene._sequences[audioObj.sequenceGroup]._lastScheduledStartBeat = ???
+
+      // WHAT IF INSTEAD OF STORING TIME WE STORE THE BEAT NUMBER AND CALC THE TIME OFF
+      // THAT!!?!
     }, when * 1000);
+
     if (scene._sequences[audioObj.sequenceGroup].timeout) {
       clearTimeout(scene._sequences[audioObj.sequenceGroup].timeout);
     }
@@ -277,6 +295,14 @@ const scheduler = () => {
   // }
   // timerID = setTimeout(scheduler, lookahead);
 };
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO:::: Maybe do need to clea scheduled stops rather
+// than letting it end and creating a new audio source cause it causes loops
+// to restart unecessarily when it could just continue with the current loop
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 export const checkIfTriggeredStop = (triggerStop, currentPos, prevPos) => {
   if (!triggerStop) return;
@@ -358,7 +384,8 @@ export const updateAudio = (
   audioObj,
   sceneScrollTop,
   prevScrollTop,
-  timeElapsed: number
+  timeElapsed: number,
+  getTime
 ) => {
   // Adjust scroll top to be relative to any start/stop values if availalble.
   const relativeProgress =
@@ -391,6 +418,10 @@ export const updateAudio = (
 
         const sequenceGroup = scene._sequences[audioObj.sequenceGroup];
 
+        // if (audioObj.sequenceDelay) {
+        //   sequenceGroup.currentDelay = audioObj.sequenceDelay;
+        //   console.log('SET DELAY');
+        // }
         // const interval =
         //   audioObj.sequenceInterval < sequenceGroup.currentInterval
         //     ? audioObj.sequenceInterval
@@ -401,12 +432,18 @@ export const updateAudio = (
           scene,
           audioObj,
           timeElapsed,
-          4,
           sequenceGroup.currentInterval
         );
       }
 
-      triggerAudioSource(scene, audioObj, audioSource, timeElapsed, when);
+      triggerAudioSource(
+        scene,
+        audioObj,
+        audioSource,
+        timeElapsed,
+        when,
+        getTime
+      );
     }
   } else if (
     checkIfTriggeredStop(
@@ -420,11 +457,11 @@ export const updateAudio = (
     if (audioObj.sequenceGroup) {
       // Fetch timeToStart
       const sequenceGroup = scene._sequences[audioObj.sequenceGroup];
+
       when = getNextSequenceTime(
         scene,
         audioObj,
         timeElapsed,
-        4,
         sequenceGroup.currentInterval
       );
     }
@@ -451,7 +488,8 @@ export const manageSceneAudio = (
   scene: scene,
   sceneScrollTop,
   prevScrollTop,
-  timeElapsed: number
+  timeElapsed: number,
+  getTime
 ) => {
   if (!scene.audio) return;
 
@@ -461,7 +499,14 @@ export const manageSceneAudio = (
 
   // console.log('relativeScrollTop', relativeScrollTop, window.scrollY);
   scene.audio.forEach((audioObj) => {
-    updateAudio(scene, audioObj, sceneScrollTop, prevScrollTop, timeElapsed);
+    updateAudio(
+      scene,
+      audioObj,
+      sceneScrollTop,
+      prevScrollTop,
+      timeElapsed,
+      getTime
+    );
   });
 };
 
@@ -487,7 +532,14 @@ export const initSceneAudio = (scene, sceneScrollTop, getTimeCallback) => {
             audioObj.sample.sources.unshift(audioSource);
             const elapsedTime = getTimeCallback();
 
-            triggerAudioSource(scene, audioObj, audioSource, elapsedTime, 0);
+            triggerAudioSource(
+              scene,
+              audioObj,
+              audioSource,
+              elapsedTime,
+              0,
+              getTimeCallback
+            );
           }
         }
       }
