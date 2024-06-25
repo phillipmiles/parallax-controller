@@ -1,7 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/parallaxController.ts',
+  // entry: './src/parallaxController.ts',
+  entry: './src/classes/index.ts',
   output: {
     library: 'parallax',
     filename: 'parallax.js',

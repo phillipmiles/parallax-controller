@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Parallax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/style-music.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="build/parallax.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="container">
+        <div class="song-menu">
+          <h3 class="menu-1">1, 2, 3, 4</h3>
+          <h3 class="menu-2">Intro</h3>
+          <h3 class="menu-3">Verse 1</h3>
+          <h3 class="menu-4">Chorus 1</h3>
+          <h3>...</h3>
+          <h3>...</h3>
+          <h3>...</h3>
+        </div>
+        <div id="metronome" class="metronome"></div>
+      </div>
+    </div>
+
+    <script>
+      const pc = new parallax.ParallaxController({
+        distance: 200,
+      });
+
+      const audio = new parallax.AudioSource('assets/music/count-in.mp3');
+      const audioManager = new parallax.ParallaxAudioManager(audio, {});
+
+      const initAudio = async () => {
+        await audio.load();
+      };
+
+      // WHAT IF WE PUT START STOP PROPS INTO AUDIOMANAGER OPTIONS AND LET THE
+      // MANAGER CREATE AND HOLD THE TRIGGERS? THEN JUST HAVE AN ADDAUDIO FUNCTION
+      // ON THE PARALLAX CONTROLLER. SAME WAY WE"LL HAVE AN ADD ANIMATION FUNCTION.
+      // PARALLAX CONTROLLER THEN FEEDS UPDATED SCROLL POS TO THOSE TWO FUNCTIONS
+      // USED FOR TRANSITIONING AUDIO EFFECTS AND ANIMATION EFFECTS. USER CAN STILL
+      // CREATE THERE OWN PARALLAXTRIGGERS IF THEY WANT BUT NOT FOR HANDLING AUDIO.
+      // CAN PASS AN ARRAY OF EFFECTS TO THE AUDIO MANAGER TOO.
+      // ALSO NEED A SCHEDULER CLASS. PASS THIS IN TO AN AUDIO MANAGER TO QUEUE SOUNDS.
+
+      const startTrigger = new parallax.ParallaxTrigger(200, {
+        triggerDirection: 'both',
+        onTrigger: () => {
+          const sound = audioManager.createSound();
+          sound.start();
+        },
+      });
+
+      const stopTrigger = new parallax.ParallaxTrigger(50, {
+        triggerDirection: 'both',
+        onTrigger: () => {
+          audioManager.stopAll();
+        },
+      });
+
+      pc.addTrigger(startTrigger);
+      pc.addTrigger(stopTrigger);
+      pc.init();
+      console.log(pc);
+
+      const turnOnAudio = () => {
+        initAudio();
+      };
+
+      document.body.addEventListener('click', turnOnAudio);
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { getCurrentPropValue } from './property';
 import { audio, scene } from './types';
 
-const getAudioFile = async (audioContext, filepath) => {
+export const getAudioFile = async (audioContext, filepath) => {
   const response = await fetch(filepath);
   const arrayBuffer = await response.arrayBuffer();
   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
@@ -194,42 +194,11 @@ export const getNextSequenceTime = (
   sequenceInterval,
   sequenceDelay = 0
 ) => {
-  // const timeStarted = scene._sequences[audioObj.sequenceGroup]
-  //   ? scene._sequences[audioObj.sequenceGroup]._timeStarted
-  //   : 0;
-
-  // const timeLastScheduledStarted = scene._sequences[audioObj.sequenceGroup]
-  //   ? scene._sequences[audioObj.sequenceGroup]._timeLastScheduledStarted
-  //   : new Date();
-
-  // console.log(
-  //   'timeLastScheduledStarted',
-  //   timeLastScheduledStarted,
-  //   audioObj.sample.context.currentTime,
-  //   scene._sequences[audioObj.sequenceGroup].queue[0]
-  // );
-  // const timeThisStarted = audioObj._timeStarted ? audioObj._timeStarted : 0;
-
-  // const elapsed = getTimeElapsed(timeLastScheduledStarted, new Date());
-  // const elapsed = timeElapsed - timeLastScheduledStarted;
-  // const elapsed = timeElapsed - timeLastScheduledStarted;
   const elapsed =
     audioObj.sample.context.currentTime -
     scene._sequences[audioObj.sequenceGroup].queue[0].when;
 
-  // console.log(
-  //   'ts',
-  //   timeStarted,
-  //   timeElapsed - timeStarted,
-  //   elapsed,
-  //   scene._sequences[audioObj.sequenceGroup]._timeStarted
-  // );
-  // const relativeTime = timeElapsed
-
-  //
   const offset = scene._sequences[audioObj.sequenceGroup].offset;
-
-  //
 
   const nextBeatIn = timeTillSchedule(
     audioObj.bpm,
@@ -240,18 +209,8 @@ export const getNextSequenceTime = (
     offset
   );
 
-  // console.log(
-  //   'nextBeatIn',
-  //   audioObj.bpm,
-  //   sequenceInterval,
-  //   nextBeatIn,
-  //   sequenceDelay
-  // );
-
   return nextBeatIn;
 };
-
-export const triggerSequencedAudioSource = () => {};
 
 export const triggerAudioSource = (
   scene,
@@ -261,62 +220,7 @@ export const triggerAudioSource = (
   when = 0,
   getTime
 ) => {
-  // if (!scene._sequences[audioObj.sequenceGroup]) {
-  //   scene._sequences[audioObj.sequenceGroup] = {
-  //     _timeStarted: timeElapsed,
-  //   };
-  // }
-
-  if (audioObj.sequenceGroup) {
-    // Store sequenceInterval for current audio sequence group.
-    // scene._sequences[audioObj.sequenceGroup]._nextTime = when + timeElapsed;
-    // const timeout = setTimeout(() => {
-    //   console.log(
-    //     'Set',
-    //     // audioObj.sequenceInterval,
-    //     audioObj.sample.context.currentTime + when,
-    //     timeElapsed,
-    //     getTime(),
-    //     scene._sequences[audioObj.sequenceGroup]._nextTime,
-    //     scene._sequences[audioObj.sequenceGroup]
-    //       ._queuedTimeLastScheduledStarted,
-    //     scene._sequences[audioObj.sequenceGroup]
-    //       ._queuedTimeLastScheduledStarted2
-    //     // scene._sequences[audioObj.sequenceGroup]._timeStarted
-    //   );
-    //   scene._sequences[audioObj.sequenceGroup].currentInterval =
-    //     audioObj.sequenceInterval;
-    //   // scene._sequences[audioObj.sequenceGroup]._timeLastScheduledStarted =
-    //   //   getTime();
-    //   scene._sequences[audioObj.sequenceGroup]._timeLastScheduledStarted =
-    //     scene._sequences[
-    //       audioObj.sequenceGroup
-    //     ]._queuedTimeLastScheduledStarted;
-    //   // scene._sequences[audioObj.sequenceGroup]._lastScheduledStartBeat = ???
-    //   // WHAT IF INSTEAD OF STORING TIME WE STORE THE BEAT NUMBER AND CALC THE TIME OFF
-    //   // THAT!!?!
-    // }, when * 1000);
-    // scene._sequences[audioObj.sequenceGroup]._queuedTimeLastScheduledStarted =
-    //   getTime() + when;
-    // scene._sequences[audioObj.sequenceGroup]._queuedTimeLastScheduledStarted2 =
-    //   audioObj.sample.context.currentTime + when;
-    // if (scene._sequences[audioObj.sequenceGroup].timeout) {
-    //   clearTimeout(scene._sequences[audioObj.sequenceGroup].timeout);
-    // }
-    // scene._sequences[audioObj.sequenceGroup].timeout = timeout;
-  }
-
-  // audioObj._timeStarted = getTime();
   audioSource.state = 'playing';
-
-  // if (scene._sequences[audioObj.sequenceGroup]) {
-  //   // scene._sequences[audioObj.sequenceGroup].currentAudioObj = audioObj;
-  //   scene._sequences[audioObj.sequenceGroup].queue.push({
-  //     audio: audioObj,
-  //     when: audioObj.sample.context.currentTime,
-  //   }); // store when???
-  //   console.log('PUSH', scene._sequences[audioObj.sequenceGroup].queue);
-  // }
 
   // Play source
   if (when) {
@@ -342,6 +246,8 @@ export const triggerAudioSource = (
     audioObj.sample.sources.splice(sourceIndex, 1);
 
     if (audioObj.sequenceGroup) {
+      // If ending track has a sequence delay, save it for the next track for
+      // some reason. Otherwise reset to 0. ??? I dunno but it works lol
       if (audioObj.sequenceDelay) {
         scene._sequences[audioObj.sequenceGroup].offset =
           audioObj.sequenceDelay;
@@ -520,22 +426,8 @@ export const updateAudio = (
             getTime
           );
         } else {
-          // if (scene._sequences[audioObj.sequenceGroup].queue.length >= 2) {
-          //   clearQueue(queue);
-          // }
-
           const sequenceGroup = scene._sequences[audioObj.sequenceGroup];
 
-          // if (audioObj.sequenceDelay) {
-          //   sequenceGroup.currentDelay = audioObj.sequenceDelay;
-          //   console.log('SET DELAY');
-          // }
-          // const interval =
-          //   audioObj.sequenceInterval < sequenceGroup.currentInterval
-          //     ? audioObj.sequenceInterval
-          //     : sequenceGroup.currentInterval;
-
-          // console.log('intertval', interval, sequenceGroup.currentInterval);
           if (queue[0] && queue[0].audio === audioObj) {
             queue[0].audio.sample.sources.forEach((source) => {
               source.sourceNode.stop(
