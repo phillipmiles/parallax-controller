@@ -28,8 +28,22 @@
         distance: 200,
       });
 
+      // Seperate from audio manager because multiple audio managers can
+      // reference the same audio source. Saves loading the file multiple times.
       const audio = new parallax.AudioSource('assets/music/count-in.mp3');
-      const audioManager = new parallax.ParallaxAudioManager(audio, {});
+
+      const audioManager = new parallax.ParallaxAudioManager(audio, {
+        start: 200,
+        stop: 50,
+        triggerDirection: 'both',
+        effects: [
+          {
+            handler: parallax.ParallaxAudioGainEffect,
+            values: [0, 1, 0],
+            keys: [0, 100, 0],
+          },
+        ],
+      });
 
       const initAudio = async () => {
         await audio.load();
@@ -43,24 +57,26 @@
       // CREATE THERE OWN PARALLAXTRIGGERS IF THEY WANT BUT NOT FOR HANDLING AUDIO.
       // CAN PASS AN ARRAY OF EFFECTS TO THE AUDIO MANAGER TOO.
       // ALSO NEED A SCHEDULER CLASS. PASS THIS IN TO AN AUDIO MANAGER TO QUEUE SOUNDS.
+      // It'll handle the calling of a sounds trigger.
 
-      const startTrigger = new parallax.ParallaxTrigger(200, {
-        triggerDirection: 'both',
-        onTrigger: () => {
-          const sound = audioManager.createSound();
-          sound.start();
-        },
-      });
+      // const startTrigger = new parallax.ParallaxTrigger(200, {
+      //   triggerDirection: 'both',
+      //   onTrigger: () => {
+      //     const sound = audioManager.createSound();
+      //     sound.start();
+      //   },
+      // });
 
-      const stopTrigger = new parallax.ParallaxTrigger(50, {
-        triggerDirection: 'both',
-        onTrigger: () => {
-          audioManager.stopAll();
-        },
-      });
+      // const stopTrigger = new parallax.ParallaxTrigger(50, {
+      //   triggerDirection: 'both',
+      //   onTrigger: () => {
+      //     audioManager.stopAll();
+      //   },
+      // });
 
-      pc.addTrigger(startTrigger);
-      pc.addTrigger(stopTrigger);
+      pc.addAudio(audioManager);
+      // pc.addTrigger(startTrigger);
+      // pc.addTrigger(stopTrigger);
       pc.init();
       console.log(pc);
 
