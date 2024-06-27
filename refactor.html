@@ -36,11 +36,12 @@
         start: 200,
         stop: 50,
         triggerDirection: 'both',
+        loop: true,
         effects: [
           {
             handler: parallax.ParallaxAudioGainEffect,
-            values: [0, 1, 0],
-            keys: [0, 100, 0],
+            values: [0, 1, 0.5],
+            keys: [0, 100, 200],
           },
         ],
       });

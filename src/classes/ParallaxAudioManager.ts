@@ -5,6 +5,7 @@ import ParallaxTrigger from './ParallaxTrigger';
 class ParallaxAudioManager {
   sourceNode;
   maxPlaying;
+  loop;
   sounds = [];
   effects;
 
@@ -26,12 +27,14 @@ class ParallaxAudioManager {
       onStart,
       onStop,
       effects,
+      loop,
     }
   ) {
     this.sourceNode = source;
     this.maxPlaying = maxPlaying;
     this.onStart = onStart;
     this.onStop = onStop;
+    this.loop = loop;
     this.effects = effects;
 
     this.startTrigger = new ParallaxTrigger(start, {
@@ -59,6 +62,9 @@ class ParallaxAudioManager {
   };
 
   start = (scrollHistory) => {
+    // XXX TODO:: SHOULD WE SET A LISTENER TO WAIT FOR IT TO BE READY BEFORE TRYING AGAIN???
+    if (!this.sourceNode.ready) return false;
+
     const sound = this.createSound();
     if (!sound) {
       return false;
@@ -84,7 +90,6 @@ class ParallaxAudioManager {
   update = (scrollHistory) => {
     if (this.sounds.length === 0) return;
 
-    // XXX TODO CALC EFFECTS HERE???
     this.sounds.forEach((sound) => {
       sound.update(scrollHistory);
     });
@@ -100,6 +105,7 @@ class ParallaxAudioManager {
       this.sourceNode.buffer,
       {
         effects: this.effects,
+        loop: this.loop,
       }
     );
 

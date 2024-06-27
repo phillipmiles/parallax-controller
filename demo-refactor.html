@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>Parallax</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/style-demo.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="build/parallax.js"></script>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="slide slide-1">
+        <div class="slide-circle slide-1-circle">
+          <h1>Water</h1>
+        </div>
+      </div>
+      <div class="slide slide-2">
+        <div class="slide-circle slide-2-circle">
+          <h1>Earth</h1>
+        </div>
+      </div>
+      <div class="slide slide-3">
+        <div class="slide-circle slide-3-circle">
+          <h1>Fire</h1>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var scenes = [
+        {
+          wrapper: '#stage',
+          duration: '300%',
+          animations: [
+            {
+              selector: '.slide-1',
+              opacity: {
+                positions: [0, 1, 1],
+                keys: ['0%', '10%', '100%'],
+              },
+            },
+            {
+              selector: '.slide-1-circle',
+              scale: {
+                positions: [4, 0, 0],
+                keys: ['0%', '33%', '100%'],
+              },
+            },
+            {
+              selector: '.slide-2',
+              opacity: {
+                positions: [0, 0, 1, 1],
+                keys: ['0%', '33%', '43%', '100%'],
+              },
+            },
+            {
+              selector: '.slide-2-circle',
+              scale: {
+                positions: [4, 4, 0, 0],
+                keys: ['0%', '33%', '66%', '100%'],
+              },
+            },
+            {
+              selector: '.slide-3',
+              opacity: {
+                positions: [0, 0, 1, 1],
+                keys: ['0%', '66%', '73%', '100%'],
+              },
+            },
+            {
+              selector: '.slide-3-circle',
+              scale: {
+                positions: [4, 4, 0],
+                keys: ['0%', '66%', '100%'],
+              },
+            },
+          ],
+        },
+      ];
+
+      const distance = window.innerHeight * 3;
+
+      const percentOfDistance = (percent) => {
+        return percent * distance;
+      };
+
+      const parallaxController = new parallax.ParallaxController({
+        distance: distance,
+      });
+
+      const audioWater = new parallax.AudioSource('assets/sfx/water.mp3');
+      const audioEarth = new parallax.AudioSource('assets/sfx/earth.wav');
+      const audioFire = new parallax.AudioSource('assets/sfx/fire.wav');
+
+      const audioWaterManager = new parallax.ParallaxAudioManager(audioWater, {
+        start: [0, percentOfDistance(0.3)],
+        triggerDirection: 'both',
+        loop: true,
+        maxPlaying: 1,
+        effects: [
+          {
+            handler: parallax.ParallaxAudioGainEffect,
+            values: [0, 1, 1, 0, 0],
+            keys: [
+              0,
+              percentOfDistance(0.05),
+              percentOfDistance(0.14),
+              percentOfDistance(0.32),
+              percentOfDistance(1),
+            ],
+          },
+        ],
+      });
+
+      const audioEarthManager = new parallax.ParallaxAudioManager(audioEarth, {
+        start: [percentOfDistance(0.2), percentOfDistance(0.7)],
+        triggerDirection: 'both',
+        loop: true,
+        maxPlaying: 1,
+        effects: [
+          {
+            handler: parallax.ParallaxAudioGainEffect,
+            values: [0, 0, 1, 1, 0, 0],
+            keys: [
+              0,
+              percentOfDistance(0.3),
+              percentOfDistance(0.37),
+              percentOfDistance(0.55),
+              percentOfDistance(0.64),
+              percentOfDistance(1),
+            ],
+          },
+        ],
+      });
+
+      const audioFireManager = new parallax.ParallaxAudioManager(audioFire, {
+        start: [percentOfDistance(0.5), percentOfDistance(1)],
+        triggerDirection: 'both',
+        loop: true,
+        maxPlaying: 1,
+        effects: [
+          {
+            handler: parallax.ParallaxAudioGainEffect,
+            values: [0, 0, 1, 1, 0],
+            keys: [
+              0,
+              percentOfDistance(0.63),
+              percentOfDistance(0.7),
+              percentOfDistance(0.8),
+              percentOfDistance(1),
+            ],
+          },
+        ],
+      });
+
+      parallaxController.addAudio(audioWaterManager);
+      parallaxController.addAudio(audioEarthManager);
+      parallaxController.addAudio(audioFireManager);
+
+      parallaxController.init();
+
+      const turnOnAudio = async () => {
+        document.body.removeEventListener('click', turnOnAudio);
+        await audioWater.load();
+        await audioEarth.load();
+        await audioFire.load();
+        console.log('Done');
+      };
+
+      document.body.addEventListener('click', turnOnAudio);
+    </script>
+  </body>
+</html>

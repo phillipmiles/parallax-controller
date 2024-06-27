@@ -21,14 +21,9 @@ class ParallaxAudioGainEffect {
     this.node = context.createGain();
   }
 
-  // create = (context) => {
-  //   this.context = context;
-  //   const gainNode = context.createGain();
+  update = (scrollHistory) => {
+    const value = getCurrentPropValue(this, scrollHistory[0]);
 
-  //   return gainNode;
-  // };
-
-  update = (value) => {
     this.node.gain.setValueAtTime(value, this.context.currentTime);
   };
 }

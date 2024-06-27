@@ -2,6 +2,7 @@ class AudioSource {
   src;
   context;
   buffer;
+  ready = false;
 
   constructor(src: string) {
     this.src = src;
@@ -11,6 +12,7 @@ class AudioSource {
     const response = await fetch(filepath);
     const arrayBuffer = await response.arrayBuffer();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    this.ready = true;
     return audioBuffer;
   };
 
