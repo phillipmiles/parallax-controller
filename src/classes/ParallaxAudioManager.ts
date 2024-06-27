@@ -9,6 +9,9 @@ class ParallaxAudioManager {
   sounds = [];
   effects;
 
+  scheduler;
+  schedulerInterval;
+
   startTrigger;
   stopTrigger;
 
@@ -28,6 +31,8 @@ class ParallaxAudioManager {
       onStop,
       effects,
       loop = false,
+      scheduler,
+      schedulerInterval,
     }
   ) {
     this.sourceNode = source;
@@ -36,6 +41,8 @@ class ParallaxAudioManager {
     this.onStop = onStop;
     this.loop = loop;
     this.effects = effects;
+    this.scheduler = scheduler;
+    this.schedulerInterval = schedulerInterval;
 
     this.startTrigger = new ParallaxTrigger(start, {
       triggerDirection: triggerDirection,
@@ -78,20 +85,26 @@ class ParallaxAudioManager {
   };
 
   start = (scrollHistory) => {
-    // XXX TODO:: SHOULD WE SET A LISTENER TO WAIT FOR IT TO BE READY BEFORE TRYING AGAIN???
     if (!this.sourceNode.ready) return false;
 
     const sound = this.createSound();
-    if (!sound) {
-      return false;
+    if (!sound) return false;
+
+    if (this.scheduler) {
+      this.scheduler.next(sound);
+    } else {
+      sound.start(scrollHistory);
+      if (this.onStart) this.onStart(sound);
+      return true;
     }
-
-    sound.start(scrollHistory);
-
-    if (this.onStart) this.onStart(sound);
   };
 
   stop = (scrollHistory) => {
+    // XXX TOXO: STOP QUEED SOUNDS. CAN BE MUTIPLE BUT ISN"T ALL
+    if (this.scheduler) {
+      // XXX clear qued sounds
+    }
+    console.log('STOP SOUND');
     this.stopAll(scrollHistory);
     if (this.onStop) this.onStop();
   };
@@ -132,7 +145,11 @@ class ParallaxAudioManager {
 
   stopAll = (scrollHistory) => {
     this.sounds.forEach((sound) => {
-      sound.stop(scrollHistory);
+      console.log(sound);
+      // Stop playing sounds only
+      if (sound.started) {
+        sound.stop(scrollHistory);
+      }
     });
     this.sounds = [];
   };

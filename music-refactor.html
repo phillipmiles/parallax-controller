@@ -97,15 +97,23 @@
         distance: distance,
       });
 
+      const scheduler = new parallax.ParallaxScheduler({
+        // sequenceInterval: 4, // 1 / (110bpm / 60) = 0.5454 * 4 beats = 2181.8
+        baseInterval: 0.5454545454545454, // in seconds
+      });
+
       const audioWater = new parallax.AudioSource('assets/sfx/water.mp3');
       const audioEarth = new parallax.AudioSource('assets/sfx/earth.wav');
       const audioFire = new parallax.AudioSource('assets/sfx/fire.wav');
 
       const audioWaterManager = new parallax.ParallaxAudioManager(audioWater, {
         start: percentOfDistance([0, 0.3]),
+        stop: percentOfDistance(0.4),
         triggerDirection: 'both',
         loop: true,
         maxPlaying: 1,
+        scheduler: scheduler,
+        schedulerInterval: 4,
         effects: [
           {
             handler: parallax.ParallaxAudioGainEffect,

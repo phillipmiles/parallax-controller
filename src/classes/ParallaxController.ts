@@ -91,6 +91,7 @@ class ParallaxController {
         audioManager.start(this.scrollHistory);
       }
       if (audioManager.shouldTriggerStop(this.scrollHistory)) {
+        console.log('STOP!');
         audioManager.stop(this.scrollHistory);
       }
     });

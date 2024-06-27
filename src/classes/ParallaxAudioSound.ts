@@ -1,5 +1,6 @@
 class ParallaxAudioSound {
   sourceNode;
+  started = false;
   effects = [];
 
   constructor(context, buffer, options) {
@@ -29,7 +30,7 @@ class ParallaxAudioSound {
   start = (scrollHistory) => {
     this.update(scrollHistory); // Make sure sound effects are updated before starting
     this.sourceNode.start();
-    console.log('node start');
+    this.started = true;
   };
 
   stop = (scrollHistory) => {
