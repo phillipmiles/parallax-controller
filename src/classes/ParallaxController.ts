@@ -26,13 +26,18 @@ class ParallaxController {
     this.scrollRestoration = options.scrollRestoration;
     this.distance = options.distance;
     // this.stageElement = options.element;
-    window.addEventListener('scroll', this.requestTick, false);
   }
 
   init = () => {
     document.body.style.height = this.distance + window.innerHeight + 'px';
-
+    window.addEventListener('scroll', this.requestTick, false);
     // TODO SET ANIMATED ELEMENTS
+  };
+
+  initAudio = () => {
+    this.audioManagers.forEach((audioManager) => {
+      audioManager.init(this.scrollHistory);
+    });
   };
 
   private requestTick = () => {
@@ -80,8 +85,6 @@ class ParallaxController {
 
   processAudioManagers = () => {
     this.audioManagers.forEach((audioManager) => {
-      // TODO:: XXX Should we call an update function on all audioMangers here before
-      // triggering???
       audioManager.update(this.scrollHistory);
 
       if (audioManager.shouldTriggerStart(this.scrollHistory)) {

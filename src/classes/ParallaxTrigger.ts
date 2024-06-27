@@ -27,6 +27,16 @@ class ParallaxTrigger {
     return false;
   };
 
+  withinRange = (value) => {
+    if (!this.hasRange()) return false;
+
+    if (value >= this.triggerAt[0] && value <= this.triggerAt[1]) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   private calcDirection = (currentValue, prevValue) => {
     return currentValue - prevValue > 0 ? 'forwards' : 'backwards';
   };

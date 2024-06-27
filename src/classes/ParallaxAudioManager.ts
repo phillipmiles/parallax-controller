@@ -27,7 +27,7 @@ class ParallaxAudioManager {
       onStart,
       onStop,
       effects,
-      loop,
+      loop = false,
     }
   ) {
     this.sourceNode = source;
@@ -49,6 +49,22 @@ class ParallaxAudioManager {
       });
     }
   }
+
+  init = (scrollHistory) => {
+    // If audio source has not yet finished fetching the file then create a
+    // callback listener for when it is ready.
+    if (!this.sourceNode.ready) {
+      this.sourceNode.onLoad(() => {
+        if (this.startTrigger.withinRange(scrollHistory[0])) {
+          this.start(scrollHistory);
+        }
+      });
+    } else {
+      if (this.startTrigger.withinRange(scrollHistory[0])) {
+        this.start(scrollHistory);
+      }
+    }
+  };
 
   shouldTriggerStart = (scrollHistory) => {
     return this.startTrigger.shouldTrigger(scrollHistory[1], scrollHistory[0]);

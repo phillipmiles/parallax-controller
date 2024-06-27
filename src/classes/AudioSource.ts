@@ -3,6 +3,7 @@ class AudioSource {
   context;
   buffer;
   ready = false;
+  onLoadCallbacks = [];
 
   constructor(src: string) {
     this.src = src;
@@ -12,13 +13,18 @@ class AudioSource {
     const response = await fetch(filepath);
     const arrayBuffer = await response.arrayBuffer();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    this.ready = true;
     return audioBuffer;
   };
 
   load = async () => {
     this.context = new AudioContext();
     this.buffer = await this.getAudioFile(this.context, this.src);
+    this.ready = true;
+    this.onLoadCallbacks.forEach((func) => func());
+  };
+
+  onLoad = (func) => {
+    this.onLoadCallbacks.push(func);
   };
 }
 
