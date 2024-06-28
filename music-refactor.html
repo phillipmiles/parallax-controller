@@ -103,30 +103,28 @@
         baseInterval: 0.5454545454545454, // in seconds
       });
 
-      const audioWater = new parallax.AudioSource('assets/sfx/water.mp3');
+      const musicCountIn = new parallax.AudioSource(
+        'assets/music/count-in.mp3'
+      );
 
-      const audioWaterManager = new parallax.ParallaxAudioManager(audioWater, {
-        start: percentOfDistance([0, 0.3]),
-        triggerDirection: 'both',
-        loop: true,
-        maxPlaying: 1,
-        effects: [
-          {
-            handler: parallax.ParallaxAudioGainEffect,
-            values: [0, 1, 1, 0, 0],
-            keys: percentOfDistance([0, 0.05, 0.14, 0.32, 1]),
-          },
-        ],
-      });
+      const musicCountInManager = new parallax.ParallaxAudioManager(
+        musicCountIn,
+        {
+          start: percentOfDistance([0, 0.3]),
+          triggerDirection: 'both',
+          loop: true,
+          maxPlaying: 1,
+        }
+      );
 
-      parallaxController.addAudio(audioWaterManager);
+      parallaxController.addAudio(musicCountInManager);
 
       parallaxController.init();
 
       const turnOnAudio = async () => {
         document.body.removeEventListener('click', turnOnAudio);
-        await audioWater.load();
-        console.log('don');
+        await musicCountIn.load();
+
         parallaxController.initAudio();
       };
 

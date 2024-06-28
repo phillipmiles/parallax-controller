@@ -12,19 +12,23 @@ class ParallaxAudioSound {
       playbackRate: 1, // Speed setting
     });
 
-    effects.forEach((effect, index) => {
-      const effectInstance = new effect.handler(context, effect);
+    if (effects) {
+      effects.forEach((effect, index) => {
+        const effectInstance = new effect.handler(context, effect);
 
-      // if (index === 0) {
-      this.sourceNode.connect(effectInstance.node);
-      // } else {
-      //   effects[index - 1].node.connect(effectInstance.node);
-      // }
+        if (index === 0) {
+          this.sourceNode.connect(effectInstance.node);
+        } else {
+          effects[index - 1].node.connect(effectInstance.node);
+        }
 
-      this.effects.push(effectInstance);
-    });
+        this.effects.push(effectInstance);
+      });
 
-    this.effects[this.effects.length - 1].node.connect(context.destination);
+      this.effects[this.effects.length - 1].node.connect(context.destination);
+    } else {
+      this.sourceNode.connect(context.destination);
+    }
   }
 
   start = (scrollHistory) => {
