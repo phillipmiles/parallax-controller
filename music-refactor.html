@@ -95,25 +95,21 @@
 
       const parallaxController = new parallax.ParallaxController({
         distance: distance,
+        scrollRestoration: true,
       });
 
-      const scheduler = new parallax.ParallaxScheduler({
+      const scheduler = new parallax.ParallaxAudioScheduler({
         // sequenceInterval: 4, // 1 / (110bpm / 60) = 0.5454 * 4 beats = 2181.8
         baseInterval: 0.5454545454545454, // in seconds
       });
 
       const audioWater = new parallax.AudioSource('assets/sfx/water.mp3');
-      const audioEarth = new parallax.AudioSource('assets/sfx/earth.wav');
-      const audioFire = new parallax.AudioSource('assets/sfx/fire.wav');
 
       const audioWaterManager = new parallax.ParallaxAudioManager(audioWater, {
         start: percentOfDistance([0, 0.3]),
-        stop: percentOfDistance(0.4),
         triggerDirection: 'both',
         loop: true,
         maxPlaying: 1,
-        scheduler: scheduler,
-        schedulerInterval: 4,
         effects: [
           {
             handler: parallax.ParallaxAudioGainEffect,
@@ -123,45 +119,14 @@
         ],
       });
 
-      const audioEarthManager = new parallax.ParallaxAudioManager(audioEarth, {
-        start: percentOfDistance([0.2, 0.7]),
-        triggerDirection: 'both',
-        loop: true,
-        maxPlaying: 1,
-        effects: [
-          {
-            handler: parallax.ParallaxAudioGainEffect,
-            values: [0, 0, 1, 1, 0, 0],
-            keys: percentOfDistance([0, 0.3, 0.37, 0.55, 0.64, 1]),
-          },
-        ],
-      });
-
-      const audioFireManager = new parallax.ParallaxAudioManager(audioFire, {
-        start: percentOfDistance([0.5, 1]),
-        triggerDirection: 'both',
-        loop: true,
-        maxPlaying: 1,
-        effects: [
-          {
-            handler: parallax.ParallaxAudioGainEffect,
-            values: [0, 0, 1, 1, 0],
-            keys: percentOfDistance([0, 0.63, 0.7, 0.8, 1]),
-          },
-        ],
-      });
-
       parallaxController.addAudio(audioWaterManager);
-      parallaxController.addAudio(audioEarthManager);
-      parallaxController.addAudio(audioFireManager);
 
       parallaxController.init();
 
       const turnOnAudio = async () => {
         document.body.removeEventListener('click', turnOnAudio);
         await audioWater.load();
-        await audioEarth.load();
-        await audioFire.load();
+        console.log('don');
         parallaxController.initAudio();
       };
 

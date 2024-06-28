@@ -17,9 +17,10 @@ class ParallaxController {
   distance: number;
 
   constructor(options: ParallaxControllerOptions) {
+    // Tells to restore scroll position or not on page load.
     if (options.scrollRestoration === true) {
       history.scrollRestoration = 'auto';
-    } else if (options.scrollRestoration === false) {
+    } else {
       history.scrollRestoration = 'manual';
     }
 
@@ -30,11 +31,28 @@ class ParallaxController {
 
   init = () => {
     document.body.style.height = this.distance + window.innerHeight + 'px';
+
+    this.scrollHistory.push(window.scrollY); // Need to store a value despite
+    // scroll restoration as below solution on fires if restoration isn't already
+    // at position 0.
+
+    // If scroll restoration is true then we need to listen to the browser's
+    // scroll event fired by the restoration to be available before getting
+    // the init scroll position.
+    if (this.scrollRestoration === true) {
+      const initPageScroll = () => {
+        this.scrollHistory = [window.scrollY];
+        window.removeEventListener('scroll', initPageScroll, false);
+      };
+      window.addEventListener('scroll', initPageScroll, false);
+    }
+
+    // Sets ongoing scroll listener that runs all page updates.
     window.addEventListener('scroll', this.requestTick, false);
-    // TODO SET ANIMATED ELEMENTS
   };
 
   initAudio = () => {
+    console.log(this.scrollHistory);
     this.audioManagers.forEach((audioManager) => {
       audioManager.init(this.scrollHistory);
     });

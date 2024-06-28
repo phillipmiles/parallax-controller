@@ -1,8 +1,8 @@
 export { default as ParallaxController } from './ParallaxController';
 export { default as ParallaxTrigger } from './ParallaxTrigger';
-export { default as ParallaxScheduler } from './ParallaxScheduler';
 export { default as AudioSource } from './AudioSource';
 export { default as ParallaxAudioManager } from './ParallaxAudioManager';
 export { default as ParallaxAudioSound } from './ParallaxAudioSound';
 export { default as ParallaxAudioGainEffect } from './ParallaxAudioGainEffect';
+export { default as ParallaxAudioScheduler } from './ParallaxAudioScheduler';
 export * from './ParallaxDimensions';

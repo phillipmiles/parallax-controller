@@ -1,4 +1,4 @@
-class ParallaxScheduler {
+class ParallaxAudioScheduler {
   baseInterval;
   started = false;
 
@@ -20,4 +20,4 @@ class ParallaxScheduler {
   };
 }
 
-export default ParallaxScheduler;
+export default ParallaxAudioScheduler;
