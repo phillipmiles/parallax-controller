@@ -70,6 +70,23 @@ class ParallaxTrigger {
           return true;
         }
         break;
+      case 'both-reversed':
+        if (this.hasRange()) {
+          if (
+            (prevScrollValue > this.triggerAt[0] &&
+              this.triggerAt[0] >= scrollValue) ||
+            (scrollValue >= this.triggerAt[1] &&
+              this.triggerAt[1] > prevScrollValue)
+          ) {
+            return true;
+          }
+        } else if (
+          (prevScrollValue < this.triggerAt && this.triggerAt <= scrollValue) ||
+          (prevScrollValue > this.triggerAt && this.triggerAt >= scrollValue)
+        ) {
+          return true;
+        }
+        break;
       case 'forwards':
         if (this.hasRange()) {
           if (

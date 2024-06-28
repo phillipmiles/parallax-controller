@@ -51,7 +51,8 @@ class ParallaxAudioManager {
 
     if (stop) {
       this.stopTrigger = new ParallaxTrigger(stop, {
-        triggerDirection: triggerDirection,
+        triggerDirection:
+          triggerDirection === 'both' ? 'both-reversed' : triggerDirection,
         onTrigger: () => {},
       });
     }

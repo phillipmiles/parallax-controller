@@ -106,24 +106,38 @@
       const musicCountIn = new parallax.AudioSource(
         'assets/music/count-in.mp3'
       );
+      const musicIntro = new parallax.AudioSource(
+        'assets/music/intro-loop.mp3'
+      );
 
       const musicCountInManager = new parallax.ParallaxAudioManager(
         musicCountIn,
         {
           start: percentOfDistance([0, 0.3]),
+          stop: percentOfDistance(0.3),
           triggerDirection: 'both',
           loop: true,
           maxPlaying: 1,
         }
       );
 
+      const musicIntroManager = new parallax.ParallaxAudioManager(musicIntro, {
+        start: percentOfDistance([0.3, 0.5]),
+        stop: percentOfDistance([0.3, 0.5]),
+        triggerDirection: 'both',
+        loop: true,
+        maxPlaying: 1,
+      });
+
       parallaxController.addAudio(musicCountInManager);
+      parallaxController.addAudio(musicIntroManager);
 
       parallaxController.init();
 
       const turnOnAudio = async () => {
         document.body.removeEventListener('click', turnOnAudio);
         await musicCountIn.load();
+        await musicIntro.load();
 
         parallaxController.initAudio();
       };
