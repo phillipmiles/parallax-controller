@@ -36,7 +36,10 @@ class ParallaxAudioSound {
     this.sourceNode.start();
     this.started = true;
   };
-
+  startWhen = (when) => {
+    this.sourceNode.start(this.sourceNode.context.currentTime + when);
+    this.started = true; // XXX CAUTION Should this be true when it's QUEUED to start?
+  };
   stop = (scrollHistory) => {
     this.sourceNode.stop();
   };

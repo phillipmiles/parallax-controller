@@ -116,6 +116,8 @@
           start: percentOfDistance([0, 0.3]),
           stop: percentOfDistance(0.3),
           triggerDirection: 'both',
+          scheduler: scheduler,
+          schedulerInterval: 4,
           loop: true,
           maxPlaying: 1,
         }
@@ -125,6 +127,8 @@
         start: percentOfDistance([0.3, 0.5]),
         stop: percentOfDistance([0.3, 0.5]),
         triggerDirection: 'both',
+        scheduler: scheduler,
+        schedulerInterval: 8,
         loop: true,
         maxPlaying: 1,
       });

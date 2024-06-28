@@ -92,7 +92,7 @@ class ParallaxAudioManager {
     if (!sound) return false;
 
     if (this.scheduler) {
-      this.scheduler.next(sound);
+      this.scheduler.next(sound, this.schedulerInterval);
     } else {
       sound.start(scrollHistory);
       if (this.onStart) this.onStart(sound);
