@@ -2,57 +2,58 @@ class ParallaxAudioScheduler {
   baseInterval;
   time;
   started = false;
-  currentSound;
-  currentSoundMultipler;
-  nextSound;
-  nextSoundMultiplier;
+  currentSoundManager;
+  nextSoundManager;
 
   constructor({ baseInterval }) {
     this.baseInterval = baseInterval;
   }
 
-  timeTill = (sound) => {
+  timeTill = () => {
     const timeElapsed = (new Date().getTime() - this.time.getTime()) / 1000;
     const currentIntervalLength =
-      this.baseInterval * this.currentSoundMultipler;
+      this.baseInterval * this.currentSoundManager.schedulerInterval;
 
     const timeThroughBeat = timeElapsed % currentIntervalLength;
     return currentIntervalLength - timeThroughBeat;
   };
 
-  next = (sound, intervalMultiplier) => {
+  next = (soundManager) => {
+    if (soundManager === this.currentSoundManager) {
+      // XXX Clear next and clear stopWhens
+      return;
+    }
+
     if (!this.started) {
       this.time = new Date();
       // JUST PLAY DA SOUND. NO WAIT
+      const sound = soundManager.createSound();
       sound.start();
       this.started = true;
-      this.currentSound = sound;
-      this.currentSoundMultipler = intervalMultiplier;
-
-      // this.timeTill(sound);
+      this.currentSoundManager = soundManager;
 
       console.log('start');
-
-      // Store playing sound somewhere!!!!
     } else {
-      this.nextSound = sound;
-      this.nextSoundMultiplier = intervalMultiplier;
-      const timeTillCurrentEnds = this.timeTill(sound);
+      this.nextSoundManager = soundManager;
+
+      const timeTillCurrentEnds = this.timeTill();
       console.log('WHEN?', timeTillCurrentEnds);
+
+      const sound = soundManager.createSound();
       sound.startWhen(timeTillCurrentEnds);
-      // Get playing sound,
-      // Calc time till it's finished ITS interval multiplier
-      // Set a when on stopping the old sound
-      // Set a when on playing this new sound. OR add stop listener and play then
+
+      // OR SET A STOPWHEN AND LISTEN TO CURRENT SOUND TO STOP BEFORE PLAYING NEXT
     }
+  };
 
-    // IF NO CURRENT THEN NEXT BECOMES CURRENT IMMEDIENTLY
+  stop = () => {
+    const timeTillCurrentEnds = this.timeTill();
+    console.log(timeTillCurrentEnds);
 
-    // XXX NEED TO QUEUE SOUND.... USING START (WHEN)??.
-    // ON THE AUDIO MANAGER TRIGGERING THE SOUND STOP WE SHOULD MAKE IT CALL TRIGGER TO CLEAR
-    // ITS SOUND FROM THE QUEUE.
-    // PUT INDIVIDUALLY FOR EACH INSTANCE OF SOUND. LIKE CLEAR A QUEUED SOUND BUT DON"T TRY
-    // TO CLEAR A SOUND ALREADY PLAYING...
+    // XXX TODO LOOP THROUGH ALL SOUNDS
+    // this.currentSoundManager.stopAllWhen(timeTillCurrentEnds);
+
+    // this.currentSound.stopWhen(timeTillCurrentEnds);
   };
 }
 

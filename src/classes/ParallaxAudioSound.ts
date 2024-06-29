@@ -44,6 +44,10 @@ class ParallaxAudioSound {
     this.sourceNode.stop();
   };
 
+  stopWhen = (when) => {
+    this.sourceNode.stop(this.sourceNode.context.currentTime + when);
+  };
+
   update = (scrollHistory) => {
     this.effects.forEach((effect) => {
       effect.update(scrollHistory);

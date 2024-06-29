@@ -88,12 +88,11 @@ class ParallaxAudioManager {
   start = (scrollHistory) => {
     if (!this.sourceNode.ready) return false;
 
-    const sound = this.createSound();
-    if (!sound) return false;
-
     if (this.scheduler) {
-      this.scheduler.next(sound, this.schedulerInterval);
+      this.scheduler.next(this);
     } else {
+      const sound = this.createSound();
+      if (!sound) return false;
       sound.start(scrollHistory);
       if (this.onStart) this.onStart(sound);
       return true;
@@ -102,12 +101,29 @@ class ParallaxAudioManager {
 
   stop = (scrollHistory) => {
     // XXX TOXO: STOP QUEED SOUNDS. CAN BE MUTIPLE BUT ISN"T ALL
+
+    // XXX OKAY HOLD UP
+    // - WHAT ABOUT STOPPING A SOUND WITHOUT ANOTHER ONE QUEUED
+    // - DO WE STOP ALL INSTANCES OF A SOUND?
+    // - SHOULD THE START BE ALLOWED TO START MULTIPLE INSTANCES
+    // - SHOULD THE SCHEDULER BE ABLE TO HANDLE MULTIPLE SOUNDS PLAYING AT ONCE???
+    // - WAIT IT MAKES NO SENSE TO PLAY THE SAME SOUND MULTIPLE TIMES IN TIME DOES IT???
+    // - WHAT IF SCHEDULER HELD THE MANAGER INSTANCE NOT A SINGLE SOUND INSTANCE????
+    // - - would have access to the managers scheduler interval
+    // - - would have access to all sound instances made by the manager.
+    // - - Could make a comparison to see if the manger passed in next() is the same as
+    //     the currently playing manager.
+    // - ALSO WHAT ABOUT CANCELING NEXT IF WE SCROLL BACK TO CURRENT SOUND BEFORE NEXT HAD STARTED??
+    // - THERES STILL A BUG IN TIMING WHEN AUDIO TAKES A SECOND TO PLAY AFTER CLICKING
+
     if (this.scheduler) {
       // XXX clear qued sounds
+      this.scheduler.stop();
+    } else {
+      console.log('STOP SOUND');
+      this.stopAll(scrollHistory);
+      if (this.onStop) this.onStop();
     }
-    console.log('STOP SOUND');
-    this.stopAll(scrollHistory);
-    if (this.onStop) this.onStop();
   };
 
   // TODO::: Get effects value calculated here once and share it with all
