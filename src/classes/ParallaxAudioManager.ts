@@ -118,7 +118,7 @@ class ParallaxAudioManager {
 
     if (this.scheduler) {
       // XXX clear qued sounds
-      this.scheduler.stop();
+      this.scheduler.stop(this);
     } else {
       console.log('STOP SOUND');
       this.stopAll(scrollHistory);
@@ -142,6 +142,7 @@ class ParallaxAudioManager {
   };
 
   createSound = () => {
+    console.log('too many sounds');
     if (this.sounds.length >= this.maxPlaying) {
       return false;
     }
@@ -152,6 +153,7 @@ class ParallaxAudioManager {
       {
         effects: this.effects,
         loop: this.loop,
+        onStart: this.onStart,
       }
     );
 
@@ -166,6 +168,21 @@ class ParallaxAudioManager {
       // Stop playing sounds only
       if (sound.started) {
         sound.stop(scrollHistory);
+      }
+    });
+    this.sounds = [];
+  };
+
+  stopAllWhen = (when) => {
+    // this.sourceNode.addEventListener('ended', () => {
+    //   console.log(new Date().getTime());
+    // });
+    // setTimeout(() => console.log(new Date().getTime()), when * 1000);
+
+    this.sounds.forEach((sound) => {
+      // Stop playing sounds only
+      if (sound.started) {
+        sound.stopWhen(when);
       }
     });
     this.sounds = [];

@@ -98,6 +98,8 @@
         scrollRestoration: true,
       });
 
+      const BASE_INTERVAL = 0.5454545454545454;
+
       const scheduler = new parallax.ParallaxAudioScheduler({
         // sequenceInterval: 4, // 1 / (110bpm / 60) = 0.5454 * 4 beats = 2181.8
         baseInterval: 0.5454545454545454, // in seconds
@@ -117,6 +119,9 @@
           stop: percentOfDistance(0.3),
           triggerDirection: 'both',
           scheduler: scheduler,
+          onStart: () => {
+            scheduler.setInterval(BASE_INTERVAL * 4);
+          },
           schedulerInterval: 4,
           loop: true,
           maxPlaying: 1,
@@ -126,6 +131,9 @@
       const musicIntroManager = new parallax.ParallaxAudioManager(musicIntro, {
         start: percentOfDistance([0.3, 0.5]),
         stop: percentOfDistance([0.3, 0.5]),
+        onStart: () => {
+          scheduler.setInterval(BASE_INTERVAL * 8);
+        },
         triggerDirection: 'both',
         scheduler: scheduler,
         schedulerInterval: 8,

@@ -2,10 +2,12 @@ class ParallaxAudioSound {
   sourceNode;
   started = false;
   effects = [];
+  onStart;
 
   constructor(context, buffer, options) {
-    const { effects } = options;
+    const { effects, onStart } = options;
 
+    this.onStart = onStart;
     this.sourceNode = new AudioBufferSourceNode(context, {
       buffer: buffer,
       loop: options.loop ? options.loop : false,
@@ -29,6 +31,8 @@ class ParallaxAudioSound {
     } else {
       this.sourceNode.connect(context.destination);
     }
+
+    // this.sourceNode.addEventListener('ended', () => console.log('BAAAM!!!'));
   }
 
   start = (scrollHistory) => {
@@ -38,6 +42,7 @@ class ParallaxAudioSound {
   };
   startWhen = (when) => {
     this.sourceNode.start(this.sourceNode.context.currentTime + when);
+    if (this.onStart) setTimeout(() => this.onStart(), when * 1000);
     this.started = true; // XXX CAUTION Should this be true when it's QUEUED to start?
   };
   stop = (scrollHistory) => {
