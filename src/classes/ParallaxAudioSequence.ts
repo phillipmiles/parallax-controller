@@ -3,10 +3,11 @@ import ParallaxAudioManager from './ParallaxAudioManager';
 class ParallaxAudioSequence {
   sound;
   queue: ParallaxAudioManager[] = [];
+  timeStarted;
 
   constructor() {}
 
-  private next = () => {
+  private ended = () => {
     if (!this.queue[0]) {
       this.sound = undefined;
       return;
@@ -20,8 +21,14 @@ class ParallaxAudioSequence {
 
     this.sound = newSound;
     newSound.start(window.scrollY);
-    newSound.sourceNode.addEventListener('ended', this.next);
+    this.timeStarted = performance.now();
+    newSound.sourceNode.addEventListener('ended', this.ended);
   };
+
+  // next = (when?) => {
+  //   this.sound.sourceNode.addEventListener('ended', this.ended);
+  //   this.sound.stop(when);
+  // };
 
   add = (soundManager) => {
     if (this.sound) {
@@ -31,7 +38,9 @@ class ParallaxAudioSequence {
       this.sound = newSound;
 
       newSound.start(window.scrollY);
-      newSound.sourceNode.addEventListener('ended', this.next);
+      this.timeStarted = performance.now();
+
+      newSound.sourceNode.addEventListener('ended', this.ended);
     }
   };
 

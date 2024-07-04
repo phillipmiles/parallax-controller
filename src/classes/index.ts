@@ -4,6 +4,6 @@ export { default as AudioSource } from './AudioSource';
 export { default as ParallaxAudioManager } from './ParallaxAudioManager';
 export { default as ParallaxAudioSound } from './ParallaxAudioSound';
 export { default as ParallaxAudioGainEffect } from './ParallaxAudioGainEffect';
-export { default as ParallaxAudioScheduler } from './ParallaxAudioScheduler';
+// export { default as ParallaxAudioScheduler } from './ParallaxAudioScheduler';
 export { default as ParallaxAudioSequence } from './ParallaxAudioSequence';
 export * from './ParallaxDimensions';
