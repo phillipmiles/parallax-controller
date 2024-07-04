@@ -4,10 +4,14 @@ class ParallaxAudioSequence {
   sound;
   queue: ParallaxAudioManager[] = [];
   timeStarted;
+  onNext: Function;
 
-  constructor() {}
+  constructor(onNext) {
+    this.onNext = onNext;
+  }
 
   private ended = () => {
+    if (this.onNext) this.onNext();
     if (!this.queue[0]) {
       this.sound = undefined;
       return;

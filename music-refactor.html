@@ -108,6 +108,8 @@
       });
 
       const BASE_INTERVAL = 0.5454545454545454;
+      let queuedIntervalMultipler;
+      let currentIntervalMultiplier;
 
       const musicCountIn = new parallax.AudioSource(
         'assets/music/count-in.mp3'
@@ -152,15 +154,19 @@
         }
       );
 
-      const sequence = new parallax.ParallaxAudioSequence();
+      const onNextSequence = () => {
+        currentIntervalMultiplier = queuedIntervalMultipler;
+      };
 
+      const sequence = new parallax.ParallaxAudioSequence(onNextSequence);
+
+      const COUNTIN_INTERVAL = 4;
       const startCountIn = new parallax.ParallaxTrigger(
         percentOfDistance([0, 0.3]),
         {
           triggerDirection: 'both',
           disabled: true,
           onTrigger: (scrollPos) => {
-            console.log('TRIGGER');
             if (
               musicCountInManager.sounds.find(
                 (sound) => sound === sequence.sound
@@ -172,6 +178,7 @@
               !sequence.queue.find((manager) => manager === musicCountInManager)
             ) {
               console.log('Add 1');
+              queuedIntervalMultipler = COUNTIN_INTERVAL;
               sequence.add(musicCountInManager);
             }
           },
@@ -194,6 +201,7 @@
       parallaxController.addTrigger(startCountIn);
       parallaxController.addTrigger(stopCountIn);
 
+      const INTRO_INTERVAL = 8;
       const startIntro = new parallax.ParallaxTrigger(
         percentOfDistance([0.3, 0.5]),
         {
@@ -208,6 +216,7 @@
             } else if (
               !sequence.queue.find((manager) => manager === musicIntroManager)
             ) {
+              queuedIntervalMultipler = INTRO_INTERVAL;
               sequence.add(musicIntroManager);
             }
           },
@@ -240,6 +249,7 @@
       parallaxController.addTrigger(startIntro);
       parallaxController.addTrigger(stopIntro);
 
+      const VERSER1_INTERVAL = 8;
       const startVerse1 = new parallax.ParallaxTrigger(
         percentOfDistance([0.5, 0.7]),
         {
@@ -256,6 +266,7 @@
             } else if (
               !sequence.queue.find((manager) => manager === musicVerse1Manager)
             ) {
+              queuedIntervalMultipler = VERSER1_INTERVAL;
               sequence.add(musicVerse1Manager);
             }
           },
@@ -290,6 +301,7 @@
       parallaxController.addTrigger(startVerse1);
       parallaxController.addTrigger(stopVerse1);
 
+      const CHORUS1_INTERVAL = 8;
       const startChorus1 = new parallax.ParallaxTrigger(
         percentOfDistance([0.7, 1]),
         {
@@ -306,12 +318,17 @@
             } else if (
               !sequence.queue.find((manager) => manager === musicChorus1Manager)
             ) {
-              console.log('ehrere');
               sequence.add(musicChorus1Manager);
               sequence.sound.sourceNode.loop = true; // Need to make sure it loops again
+
+              queuedIntervalMultipler = CHORUS1_INTERVAL;
+              console.log(
+                'currentIntervalMultiplier',
+                currentIntervalMultiplier
+              );
               const time = timeTill(
                 sequence.timeStarted,
-                BASE_INTERVAL * 4,
+                BASE_INTERVAL * currentIntervalMultiplier, // XXX HAVE TO FORCE LAST SONG TO A 4 INTERVAL THOUGH
                 BASE_INTERVAL * 3
               );
 
@@ -369,18 +386,22 @@
 
         if (startCountIn.withinRange(parallaxController.scrollHistory[0])) {
           startCountIn.trigger();
+          currentIntervalMultiplier = COUNTIN_INTERVAL;
         } else if (
           startIntro.withinRange(parallaxController.scrollHistory[0])
         ) {
           startIntro.trigger();
+          currentIntervalMultiplier = INTRO_INTERVAL;
         } else if (
           startVerse1.withinRange(parallaxController.scrollHistory[0])
         ) {
           startVerse1.trigger();
+          currentIntervalMultiplier = VERSER1_INTERVAL;
         } else if (
           startChorus1.withinRange(parallaxController.scrollHistory[0])
         ) {
           startChorus1.trigger();
+          currentIntervalMultiplier = CHORUS1_INTERVAL;
         }
 
         // parallaxController.initAudio();
