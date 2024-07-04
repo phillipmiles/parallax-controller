@@ -1,6 +1,7 @@
 export interface ParallaxTriggerOptions {
   onTrigger: Function;
   triggerDirection: 'forwards' | 'backwards' | 'both';
+  disabled?: boolean;
 }
 
 class ParallaxTrigger {
@@ -13,9 +14,9 @@ class ParallaxTrigger {
     triggerAt: number | [number, number],
     options?: ParallaxTriggerOptions
   ) {
-    this.onTrigger = options.onTrigger;
-
     this.triggerAt = triggerAt;
+    this.onTrigger = options.onTrigger;
+    this.disabled = options.disabled;
     this.triggerDirection = options.triggerDirection;
   }
 
@@ -37,14 +38,9 @@ class ParallaxTrigger {
     }
   };
 
-  private calcDirection = (currentValue, prevValue) => {
-    return currentValue - prevValue > 0 ? 'forwards' : 'backwards';
-  };
-
   trigger = () => {
-    this.onTrigger();
+    if (!this.disabled) this.onTrigger();
   };
-  // private convertTriggerToPx = () => {};
 
   // Called by parallax controller? Only parallax controller has the actual scroll
   // listener so we limit calculation on scroll deltas to one time per scroll rather
@@ -120,49 +116,7 @@ class ParallaxTrigger {
     }
 
     return false;
-
-    // Using current and before values passed and option settings of class determine if
-    // this trigger has been triggered
-    //   this.onTrigger('trigger start');
-    // this.onTrigger('trigger stop');
-
-    // SHOULD WE HAVE A TRIGGER START AND STOP OR SHOULD WE CREATE TWO DIFFERENT
-    // PARALLAX TRIGGERS ONE FOR EACH???? Remember range is important for init.
   };
 }
 
 export default ParallaxTrigger;
-
-// const trigger1Start = new ParallaxTrigger(AudioScheduler.trigger, {
-//   scheduler??
-// });
-
-// const parallax = new ParallaxController();
-
-// parallax.addTrigger(trigger1);
-
-// class ParallaxController {
-//   constructor() {}
-// }
-
-// class AudioContent {}
-
-// class AudioSequence {
-//   constructor() {}
-// }
-
-/*
-
-- Parallax controller has triggers
-- A trigger can have an audio
-- An audio can have a schedule???
-- Or a trigger can have a schedule???
-
-OR
-
-- Parallax controller has a library
-- A library has audio
-- Audio has a trigger
-
-
-*/

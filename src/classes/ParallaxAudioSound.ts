@@ -42,14 +42,19 @@ class ParallaxAudioSound {
   };
   startWhen = (when) => {
     this.sourceNode.start(this.sourceNode.context.currentTime + when);
-    if (this.onStart) setTimeout(() => this.onStart(), when * 1000);
-    this.started = true; // XXX CAUTION Should this be true when it's QUEUED to start?
+    if (this.onStart)
+      setTimeout(() => {
+        this.started = true; // XXX CAUTION Should this be true when it's QUEUED to start?
+        this.onStart();
+      }, when * 1000);
   };
   stop = (scrollHistory) => {
+    console.log('stop');
     this.sourceNode.stop();
   };
 
   stopWhen = (when) => {
+    console.log('stop when', when);
     this.sourceNode.stop(this.sourceNode.context.currentTime + when);
   };
 

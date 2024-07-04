@@ -95,14 +95,15 @@
 
       const parallaxController = new parallax.ParallaxController({
         distance: distance,
-        scrollRestoration: true,
+        scrollRestoration: false,
+        onUpdate: () => {},
       });
 
       const BASE_INTERVAL = 0.5454545454545454;
 
       const scheduler = new parallax.ParallaxAudioScheduler({
         // sequenceInterval: 4, // 1 / (110bpm / 60) = 0.5454 * 4 beats = 2181.8
-        baseInterval: 0.5454545454545454, // in seconds
+        baseInterval: BASE_INTERVAL * 4, // in seconds
       });
 
       const musicCountIn = new parallax.AudioSource(
@@ -115,13 +116,14 @@
       const musicCountInManager = new parallax.ParallaxAudioManager(
         musicCountIn,
         {
-          start: percentOfDistance([0, 0.3]),
-          stop: percentOfDistance(0.3),
+          // start: percentOfDistance([0.75, 1]),
+          // stop: percentOfDistance(0.75),
           triggerDirection: 'both',
           scheduler: scheduler,
-          onStart: () => {
-            scheduler.setInterval(BASE_INTERVAL * 4);
-          },
+          // onStart: () => {
+          //   scheduler.setInterval(BASE_INTERVAL * 4);
+          //   scheduler.resetTime();
+          // },
           schedulerInterval: 4,
           loop: true,
           maxPlaying: 1,
@@ -129,17 +131,103 @@
       );
 
       const musicIntroManager = new parallax.ParallaxAudioManager(musicIntro, {
-        start: percentOfDistance([0.3, 0.5]),
-        stop: percentOfDistance([0.3, 0.5]),
-        onStart: () => {
-          scheduler.setInterval(BASE_INTERVAL * 8);
-        },
+        // start: percentOfDistance([0.3, 0.5]),
+        // stop: percentOfDistance([0.3, 0.5]),
+        // onStart: () => {
+        //   scheduler.setInterval(BASE_INTERVAL * 8);
+        //   scheduler.resetTime();
+        // },
         triggerDirection: 'both',
         scheduler: scheduler,
         schedulerInterval: 8,
         loop: true,
         maxPlaying: 1,
       });
+
+      const sequence = new parallax.ParallaxAudioSequence();
+
+      const startCountIn = new parallax.ParallaxTrigger(
+        percentOfDistance([0, 0.3]),
+        {
+          triggerDirection: 'both',
+          disabled: true,
+          onTrigger: (scrollPos) => {
+            console.log('TRIGGER');
+            if (
+              musicCountInManager.sounds.find(
+                (sound) => sound === sequence.sound
+              )
+            ) {
+              console.log('loop 1');
+              sequence.sound.sourceNode.loop = true;
+            } else if (
+              !sequence.queue.find((manager) => manager === musicCountInManager)
+            ) {
+              console.log('Add 1');
+              sequence.add(musicCountInManager);
+            }
+          },
+        }
+      );
+
+      const stopCountIn = new parallax.ParallaxTrigger(percentOfDistance(0.3), {
+        triggerDirection: 'forwards',
+        onTrigger: (scrollPos) => {
+          console.log(sequence.sound);
+          if (
+            musicCountInManager.sounds.find((sound) => sound === sequence.sound)
+          ) {
+            console.log('unloop 1');
+            sequence.sound.sourceNode.loop = false;
+          }
+        },
+      });
+
+      parallaxController.addTrigger(startCountIn);
+      parallaxController.addTrigger(stopCountIn);
+
+      const startIntro = new parallax.ParallaxTrigger(
+        percentOfDistance([0.3, 0.5]),
+        {
+          triggerDirection: 'both',
+          disabled: true,
+          onTrigger: (scrollPos) => {
+            if (
+              musicIntroManager.sounds.find((sound) => sound === sequence.sound)
+            ) {
+              sequence.sound.sourceNode.loop = true;
+            } else if (
+              !sequence.queue.find((manager) => manager === musicIntroManager)
+            ) {
+              sequence.add(musicIntroManager);
+            }
+          },
+        }
+      );
+
+      const stopIntro = new parallax.ParallaxTrigger(
+        percentOfDistance([0.3, 0.5]),
+        {
+          triggerDirection: 'both-reversed',
+          onTrigger: (scrollPos) => {
+            if (
+              musicIntroManager.sounds.find((sound) => sound === sequence.sound)
+            ) {
+              sequence.sound.sourceNode.loop = false;
+            }
+
+            const queueIndex = sequence.queue.findIndex(
+              (manager) => manager === musicIntroManager
+            );
+            if (queueIndex >= 0) {
+              sequence.remove(queueIndex);
+            }
+          },
+        }
+      );
+
+      parallaxController.addTrigger(startIntro);
+      parallaxController.addTrigger(stopIntro);
 
       parallaxController.addAudio(musicCountInManager);
       parallaxController.addAudio(musicIntroManager);
@@ -151,7 +239,17 @@
         await musicCountIn.load();
         await musicIntro.load();
 
-        parallaxController.initAudio();
+        startCountIn.disabled = false;
+        startIntro.disabled = false;
+
+        if (startCountIn.withinRange(parallaxController.scrollHistory[0])) {
+          startCountIn.trigger();
+        } else if (
+          startIntro.withinRange(parallaxController.scrollHistory[0])
+        ) {
+          startIntro.trigger();
+        }
+        // parallaxController.initAudio();
       };
 
       document.body.addEventListener('click', turnOnAudio);

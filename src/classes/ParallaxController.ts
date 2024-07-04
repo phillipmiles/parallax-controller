@@ -5,6 +5,7 @@ interface ParallaxControllerOptions {
   distance: number;
   scrollRestoration?: boolean;
   scrollHistorySize?: number;
+  onUpdate?: Function;
 }
 
 class ParallaxController {
@@ -15,6 +16,7 @@ class ParallaxController {
   scrollRestoration;
   ticking = false;
   distance: number;
+  onUpdate;
 
   constructor(options: ParallaxControllerOptions) {
     // Tells to restore scroll position or not on page load.
@@ -24,6 +26,7 @@ class ParallaxController {
       history.scrollRestoration = 'manual';
     }
 
+    this.onUpdate = options.onUpdate;
     this.scrollRestoration = options.scrollRestoration;
     this.distance = options.distance;
     // this.stageElement = options.element;
@@ -35,6 +38,7 @@ class ParallaxController {
     this.scrollHistory.push(window.scrollY); // Need to store a value despite
     // scroll restoration as below solution on fires if restoration isn't already
     // at position 0.
+    this.setPage();
 
     // If scroll restoration is true then we need to listen to the browser's
     // scroll event fired by the restoration to be available before getting
@@ -42,6 +46,7 @@ class ParallaxController {
     if (this.scrollRestoration === true) {
       const initPageScroll = () => {
         this.scrollHistory = [window.scrollY];
+        this.setPage();
         window.removeEventListener('scroll', initPageScroll, false);
       };
       window.addEventListener('scroll', initPageScroll, false);
@@ -51,12 +56,18 @@ class ParallaxController {
     window.addEventListener('scroll', this.requestTick, false);
   };
 
-  initAudio = () => {
-    console.log(this.scrollHistory);
-    this.audioManagers.forEach((audioManager) => {
-      audioManager.init(this.scrollHistory);
+  private setPage = () => {
+    this.triggers.forEach((trigger) => {
+      if (trigger.withinRange(this.scrollHistory[0])) {
+        trigger.trigger();
+      }
     });
   };
+  // initAudio = () => {
+  //   this.audioManagers.forEach((audioManager) => {
+  //     audioManager.init(this.scrollHistory);
+  //   });
+  // };
 
   private requestTick = () => {
     if (!this.ticking) {
@@ -69,6 +80,8 @@ class ParallaxController {
     this.updateScrollHistory();
     this.processTriggers();
     this.processAudioManagers();
+
+    if (this.onUpdate) this.onUpdate();
 
     this.ticking = false;
   };
@@ -108,7 +121,6 @@ class ParallaxController {
       if (audioManager.shouldTriggerStart(this.scrollHistory)) {
         audioManager.start(this.scrollHistory);
       } else if (audioManager.shouldTriggerStop(this.scrollHistory)) {
-        console.log('STOP!');
         audioManager.stop(this.scrollHistory);
       }
     });

@@ -120,7 +120,6 @@ class ParallaxAudioManager {
       // XXX clear qued sounds
       this.scheduler.stop(this);
     } else {
-      console.log('STOP SOUND');
       this.stopAll(scrollHistory);
       if (this.onStop) this.onStop();
     }
@@ -142,7 +141,6 @@ class ParallaxAudioManager {
   };
 
   createSound = () => {
-    console.log('too many sounds');
     if (this.sounds.length >= this.maxPlaying) {
       return false;
     }
@@ -159,12 +157,16 @@ class ParallaxAudioManager {
 
     this.sounds.push(sound);
 
+    sound.sourceNode.addEventListener('ended', () => {
+      this.sounds = this.sounds.filter((item) => sound !== item);
+    });
+
+    console.log('pushed sound', this.sounds);
     return sound;
   };
 
   stopAll = (scrollHistory) => {
     this.sounds.forEach((sound) => {
-      console.log(sound);
       // Stop playing sounds only
       if (sound.started) {
         sound.stop(scrollHistory);
@@ -180,13 +182,28 @@ class ParallaxAudioManager {
     // setTimeout(() => console.log(new Date().getTime()), when * 1000);
 
     this.sounds.forEach((sound) => {
+      console.log('Um?', sound.started, this);
       // Stop playing sounds only
       if (sound.started) {
         sound.stopWhen(when);
       }
     });
-    this.sounds = [];
+    // this.sounds = [];
   };
+
+  // clearAllStopWhens = () => {
+  //   console.log('hello', this.sounds);
+  //   this.sounds.forEach((sound) => {
+  //     const BIGNUMBER = 10000;
+  //     if (sound.started) {
+  //       sound.stopWhen(BIGNUMBER);
+  //       console.log('DISS!!!', this.sourceNode);
+  //       sound.sourceNode.addEventListener('ended', () => {
+  //         console.log('NEVER END');
+  //       });
+  //     }
+  //   });
+  // };
 }
 
 export default ParallaxAudioManager;
