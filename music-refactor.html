@@ -27,57 +27,6 @@
     </div>
 
     <script>
-      var scenes = [
-        {
-          wrapper: '#stage',
-          duration: '300%',
-          animations: [
-            {
-              selector: '.slide-1',
-              opacity: {
-                positions: [0, 1, 1],
-                keys: ['0%', '10%', '100%'],
-              },
-            },
-            {
-              selector: '.slide-1-circle',
-              scale: {
-                positions: [4, 0, 0],
-                keys: ['0%', '33%', '100%'],
-              },
-            },
-            {
-              selector: '.slide-2',
-              opacity: {
-                positions: [0, 0, 1, 1],
-                keys: ['0%', '33%', '43%', '100%'],
-              },
-            },
-            {
-              selector: '.slide-2-circle',
-              scale: {
-                positions: [4, 4, 0, 0],
-                keys: ['0%', '33%', '66%', '100%'],
-              },
-            },
-            {
-              selector: '.slide-3',
-              opacity: {
-                positions: [0, 0, 1, 1],
-                keys: ['0%', '66%', '73%', '100%'],
-              },
-            },
-            {
-              selector: '.slide-3-circle',
-              scale: {
-                positions: [4, 4, 0],
-                keys: ['0%', '66%', '100%'],
-              },
-            },
-          ],
-        },
-      ];
-
       const distance = window.innerHeight * 3;
 
       const makePercentOf = (distance) => {
@@ -369,6 +318,70 @@
       parallaxController.addAudio(musicIntroManager);
       parallaxController.addAudio(musicVerse1Manager);
       parallaxController.addAudio(musicChorus1Manager);
+
+      const animSlide1 = new parallax.ParallaxAnimation('.slide-1', [
+        {
+          attribute: 'opacity',
+          values: [0, 1, 1],
+          positions: percentOfDistance([0, 0.1, 1]),
+        },
+      ]);
+
+      const animSlide1Circle = new parallax.ParallaxAnimation(
+        '.slide-1-circle',
+        [
+          {
+            attribute: 'scale',
+            values: [4, 0, 0],
+            positions: percentOfDistance([0, 0.33, 1]),
+          },
+        ]
+      );
+
+      const animSlide2 = new parallax.ParallaxAnimation('.slide-2', [
+        {
+          attribute: 'opacity',
+          values: [0, 0, 1, 1],
+          positions: percentOfDistance([0, 0.33, 0.43, 1]),
+        },
+      ]);
+
+      const animSlide2Circle = new parallax.ParallaxAnimation(
+        '.slide-2-circle',
+        [
+          {
+            attribute: 'scale',
+            values: [4, 4, 0, 0],
+            positions: percentOfDistance([0, 0.33, 0.66, 1]),
+          },
+        ]
+      );
+
+      const animSlide3 = new parallax.ParallaxAnimation('.slide-3', [
+        {
+          attribute: 'opacity',
+          values: [0, 0, 1, 1],
+          positions: percentOfDistance([0, 0.66, 0.73, 1]),
+        },
+      ]);
+
+      const animSlide3Circle = new parallax.ParallaxAnimation(
+        '.slide-3-circle',
+        [
+          {
+            attribute: 'scale',
+            values: [4, 4, 0],
+            positions: percentOfDistance([0, 0.66, 1]),
+          },
+        ]
+      );
+
+      parallaxController.addAnimation(animSlide1);
+      parallaxController.addAnimation(animSlide1Circle);
+      parallaxController.addAnimation(animSlide2);
+      parallaxController.addAnimation(animSlide2Circle);
+      parallaxController.addAnimation(animSlide3);
+      parallaxController.addAnimation(animSlide3Circle);
 
       parallaxController.init();
 

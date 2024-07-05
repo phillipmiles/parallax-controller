@@ -1,3 +1,4 @@
+import ParallaxAnimation from './ParallaxAnimation';
 import ParallaxAudioManager from './ParallaxAudioManager';
 import ParallaxTrigger from './ParallaxTrigger';
 
@@ -12,6 +13,7 @@ class ParallaxController {
   // stageElement;
   triggers: ParallaxTrigger[] = [];
   audioManagers: ParallaxAudioManager[] = [];
+  animations: ParallaxAnimation[] = [];
   scrollHistory: number[] = [];
   scrollRestoration;
   ticking = false;
@@ -57,6 +59,9 @@ class ParallaxController {
   };
 
   private setPage = () => {
+    this.animations.forEach((animation) => {
+      animation.update(this.scrollHistory);
+    });
     this.triggers.forEach((trigger) => {
       if (trigger.withinRange(this.scrollHistory[0])) {
         trigger.trigger();
@@ -78,6 +83,7 @@ class ParallaxController {
 
   private updatePage = () => {
     this.updateScrollHistory();
+    this.processAnimations();
     this.processTriggers();
     this.processAudioManagers();
 
@@ -99,6 +105,12 @@ class ParallaxController {
     }
 
     this.scrollHistory.unshift(scrollTop);
+  };
+
+  processAnimations = () => {
+    this.animations.forEach((animation) => {
+      animation.update(this.scrollHistory);
+    });
   };
 
   processTriggers = () => {
@@ -132,6 +144,10 @@ class ParallaxController {
 
   addAudio = (audioManager: ParallaxAudioManager) => {
     this.audioManagers.push(audioManager);
+  };
+
+  addAnimation = (animation: ParallaxAnimation) => {
+    this.animations.push(animation);
   };
 }
 
