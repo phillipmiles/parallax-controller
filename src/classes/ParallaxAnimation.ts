@@ -38,6 +38,11 @@ class ParallaxAnimation {
 
   calcAttributeValue = (scrollPos, positions, values) => {
     const nextIndex = positions.findIndex((position) => position > scrollPos);
+
+    // Return end value if next index is beyond the last position in the positions array.
+    if (nextIndex === -1) {
+      return values[values.length - 1];
+    }
     const currentIndex = nextIndex - 1;
     const positionDuration = positions[nextIndex] - positions[currentIndex];
     const positionProgress = scrollPos - positions[currentIndex];
@@ -49,7 +54,6 @@ class ParallaxAnimation {
       positionDuration
     );
 
-    console.log('Next index', nextIndex, positions, scrollPos, value);
     return value;
   };
 
@@ -77,7 +81,11 @@ class ParallaxAnimation {
       }
     });
 
-    if (scale || translate || rotate) {
+    if (
+      scale !== undefined ||
+      translate !== undefined ||
+      rotate !== undefined
+    ) {
       this.fromDom.map((element) => {
         element.style['transform'] = `scale(${scale})`;
       });
