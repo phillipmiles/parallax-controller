@@ -1,3 +1,6 @@
+html {
+  background-color: #faeca0;
+}
 #stage {
   position: fixed;
   left: 0;
@@ -21,16 +24,142 @@
   align-items: center;
 }
 
+.content {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: row;
+}
+
+.song-container {
+  width: 50%;
+}
+
+.song-container h1,
+.song-container h2 {
+  margin-left: 48px; /* li padding left + scrollbar width */
+}
+
+.song-contents {
+  display: flex;
+  flex-direction: row;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 330px;
+}
+
+ul li {
+  margin: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 40px;
+  width: 100%;
+}
+
+li.active {
+  position: relative;
+  background-color: white;
+}
+
+li.active:before {
+  content: '';
+  background-color: #c8bd80;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  transform-origin: 0;
+  transform: scaleX(0.2);
+}
+
+li span {
+  position: relative;
+}
+
+.song-scrollbar {
+  width: 8px;
+  border-radius: 4px;
+  position: relative;
+  background-color: #c8bd80;
+}
+
+.song-scrollbar-indicator {
+  position: absolute;
+  z-index: 500;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  margin-left: -50%;
+  background-color: #5d5634;
+}
+
+.scroll-reminder {
+  margin-top: 64px;
+}
+
+.canvas {
+  height: 100%;
+  margin-bottom: 64px;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .song-menu {
   text-align: center;
   margin-bottom: 64px;
 }
 
-.metronome {
-  height: 40px;
-  width: 40px;
-  background-color: red;
-  border-radius: 20px;
+.dog-01 {
+  height: 300px;
+  width: 300px;
+  position: relative;
+}
+
+.dog-01 > img {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+
+.dog-01-body-01 {
+  transform: rotate(0deg);
+  transform-origin: 50% 88%;
+
+  animation-name: rock;
+  animation-duration: 1100ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes rock {
+  0% {
+    transform: rotate(-2deg);
+  }
+  10% {
+    transform: rotate(-2deg);
+  }
+  40% {
+    transform: rotate(2deg);
+  }
+  60% {
+    transform: rotate(2deg);
+  }
+  90% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(-2deg);
+  }
 }
 
 .metronome.active {
