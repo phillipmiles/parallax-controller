@@ -74,7 +74,20 @@ li.active:before {
   left: 0;
   bottom: 0;
   transform-origin: 0;
-  transform: scaleX(0.2);
+  transform: scaleX(0);
+  animation-name: li-duration;
+  animation-duration: 2000ms;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes li-duration {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
 }
 
 li span {
@@ -84,13 +97,20 @@ li span {
 .song-scrollbar {
   width: 8px;
   border-radius: 4px;
-  position: relative;
   background-color: #c8bd80;
+}
+
+.song-scrollbar-indicator-wrap {
+  top: -8px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  z-index: 500;
 }
 
 .song-scrollbar-indicator {
   position: absolute;
-  z-index: 500;
+
   top: 0;
   width: 16px;
   height: 16px;

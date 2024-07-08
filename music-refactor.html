@@ -28,7 +28,9 @@
             <h2>By artist</h2>
             <div class="song-contents">
               <div class="song-scrollbar">
-                <div class="song-scrollbar-indicator"></div>
+                <div class="song-scrollbar-indicator-wrap">
+                    <div class="song-scrollbar-indicator"></div>
+                </div>
               </div>
               <ul>
                 <li class="active"><span>Count in</span></li></li>
@@ -341,69 +343,24 @@
       parallaxController.addAudio(musicVerse1Manager);
       parallaxController.addAudio(musicChorus1Manager);
 
-      const animSlide1 = new parallax.ParallaxAnimation('.slide-1', [
-        {
-          attribute: 'opacity',
-          values: [0, 1, 1],
-          positions: percentOfDistance([0, 0.1, 1]),
-        },
-      ]);
+     
 
-      const animSlide1Circle = new parallax.ParallaxAnimation(
-        '.slide-1-circle',
+      const animScrollbar = new parallax.ParallaxAnimation(
+        '.song-scrollbar-indicator-wrap',
         [
           {
-            attribute: 'scale',
-            values: [4, 0, 0],
-            positions: percentOfDistance([0, 0.33, 1]),
+            attribute: 'translateY',
+            values: [0, 100],
+            unit: '%',
+            easing: 'linear',
+            positions: percentOfDistance([0, 1]),
           },
         ]
       );
 
-      const animSlide2 = new parallax.ParallaxAnimation('.slide-2', [
-        {
-          attribute: 'opacity',
-          values: [0, 0, 1, 1],
-          positions: percentOfDistance([0, 0.33, 0.43, 1]),
-        },
-      ]);
-
-      const animSlide2Circle = new parallax.ParallaxAnimation(
-        '.slide-2-circle',
-        [
-          {
-            attribute: 'scale',
-            values: [4, 4, 0, 0],
-            positions: percentOfDistance([0, 0.33, 0.66, 1]),
-          },
-        ]
-      );
-
-      const animSlide3 = new parallax.ParallaxAnimation('.slide-3', [
-        {
-          attribute: 'opacity',
-          values: [0, 0, 1, 1],
-          positions: percentOfDistance([0, 0.66, 0.73, 1]),
-        },
-      ]);
-
-      const animSlide3Circle = new parallax.ParallaxAnimation(
-        '.slide-3-circle',
-        [
-          {
-            attribute: 'scale',
-            values: [4, 4, 0],
-            positions: percentOfDistance([0, 0.66, 1]),
-          },
-        ]
-      );
-
-      parallaxController.addAnimation(animSlide1);
-      parallaxController.addAnimation(animSlide1Circle);
-      parallaxController.addAnimation(animSlide2);
-      parallaxController.addAnimation(animSlide2Circle);
-      parallaxController.addAnimation(animSlide3);
-      parallaxController.addAnimation(animSlide3Circle);
+      parallaxController.addAnimation(animScrollbar);
+ 
+      
 
       parallaxController.init();
 

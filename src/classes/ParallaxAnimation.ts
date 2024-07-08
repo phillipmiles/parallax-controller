@@ -32,11 +32,19 @@ class ParallaxAnimation {
   };
 
   easeInOutQuad = (t, b, c, d) => {
-    // sinusoadial in and out
     return (-c / 2) * (Math.cos((Math.PI * t) / d) - 1) + b;
   };
 
-  calcAttributeValue = (scrollPos, positions, values) => {
+  easeLinear = (t, b, c, d) => {
+    return c * (t / d) + b;
+  };
+
+  easingFunctions = {
+    'ease-in-out': this.easeInOutQuad,
+    linear: this.easeLinear,
+  };
+
+  calcAttributeValue = (scrollPos, positions, values, easeFunc) => {
     const nextIndex = positions.findIndex((position) => position > scrollPos);
 
     // Return end value if next index is beyond the last position in the positions array.
@@ -47,7 +55,9 @@ class ParallaxAnimation {
     const positionDuration = positions[nextIndex] - positions[currentIndex];
     const positionProgress = scrollPos - positions[currentIndex];
 
-    const value = this.easeInOutQuad(
+    const t = positionProgress / positionDuration;
+
+    const value = easeFunc(
       positionProgress,
       values[currentIndex],
       values[nextIndex] - values[currentIndex],
@@ -59,35 +69,53 @@ class ParallaxAnimation {
 
   update = (scrollHistory) => {
     let scale;
-    let translate;
+    let translateX;
+    let translateY;
     let rotate;
 
     this.attributes.forEach((item) => {
-      const { attribute, positions, values } = item;
+      const { attribute, positions, values, unit, easing } = item;
 
       const value = this.calcAttributeValue(
         scrollHistory[0],
         positions,
-        values
+        values,
+        this.easingFunctions[easing]
       );
 
-      if (attribute === 'scale') scale = value;
-      else if (attribute === 'translate') translate = value;
-      else if (attribute === 'rotate') rotate = value;
+      if (attribute === 'scale') scale = `${value}${unit}`;
+      else if (attribute === 'translateX') translateX = `${value}${unit}`;
+      else if (attribute === 'translateY') translateY = `${value}${unit}`;
+      else if (attribute === 'rotate') rotate = `${value}${unit}`;
       else {
         this.fromDom.map((element) => {
-          element.style[attribute] = value;
+          element.style[attribute] = `${value}${unit}`;
         });
       }
     });
 
-    if (
-      scale !== undefined ||
-      translate !== undefined ||
-      rotate !== undefined
-    ) {
+    let transformString = '';
+
+    if (scale !== undefined) {
+      transformString = transformString + `scale(${scale})`;
+    }
+
+    if (translateX !== undefined && translateY !== undefined) {
+      transformString =
+        transformString + ` translate(${translateX}, ${translateY})`;
+    } else if (translateX !== undefined) {
+      transformString = transformString + ` translateX(${translateX})`;
+    } else if (translateY !== undefined) {
+      transformString = transformString + ` translateY(${translateY})`;
+    }
+
+    if (rotate !== undefined) {
+      transformString = transformString + ` scale(${rotate})`;
+    }
+
+    if (transformString) {
       this.fromDom.map((element) => {
-        element.style['transform'] = `scale(${scale})`;
+        element.style['transform'] = transformString;
       });
     }
   };
