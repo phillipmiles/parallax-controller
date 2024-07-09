@@ -4,6 +4,9 @@
   <head>
     <title>Parallax</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
     <link href="css/style-music.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="build/parallax.js"></script>
   </head>
@@ -12,14 +15,65 @@
       <div class="container">
         <div class="content">
           <div class="canvas">
-            <div class="dog-01">
+            <div id="dog-01" class="dog">
+              <img
+                src="./assets/images/dog-01-tail-01.svg"
+                class="dog-01-tail-01"
+              />
               <img
                 src="./assets/images/dog-01-body-01.svg"
                 class="dog-01-body-01"
               />
               <img
-                src="./assets/images/dog-01-legs-01.svg"
-                class="dog-01-legs-01"
+                src="./assets/images/dog-01-head-01.svg"
+                class="dog-01-head-01"
+              />
+              <img
+                src="./assets/images/dog-01-mouth-01.svg"
+                class="dog-01-mouth-01"
+              />
+              <img
+              src="./assets/images/dog-01-eye-left-02.svg"
+              class="dog-01-eye-left-02"
+            />
+            <img
+              src="./assets/images/dog-01-eye-right-02.svg"
+              class="dog-01-eye-right-02"
+            />
+              <img
+              src="./assets/images/dog-01-eye-left-01.svg"
+              class="dog-01-eye-left-01"
+            />
+            <img
+              src="./assets/images/dog-01-eye-right-01.svg"
+              class="dog-01-eye-right-01"
+            />
+            
+            <img
+              src="./assets/images/dog-01-eyebrow-left-01.svg"
+              class="dog-01-eyebrow-left-01"
+            />
+            <img
+              src="./assets/images/dog-01-eyebrow-right-01.svg"
+              class="dog-01-eyebrow-right-01"
+            />
+            <img
+              src="./assets/images/dog-01-iris-left-01.svg"
+              class="dog-01-iris-left-01"
+            />
+            <img
+              src="./assets/images/dog-01-iris-right-01.svg"
+              class="dog-01-iris-right-01"
+            />
+            </div>
+            <div id="dog-02" class="dog">
+              <img
+                src="./assets/images/dog-02-body-01.svg"
+                class="dog-02-body-01"
+              />
+              <img
+                src="./assets/images/dog-02-legs-01.svg"
+                class="dog-02-legs-01"
               />
             </div>
           </div>
@@ -34,8 +88,8 @@
               </div>
               <ul>
                 <li class="active"><span>Count in</span></li></li>
-                <li>Intro</li>
-                <li>Verse 1</li>
+                <li id="song-intro"><span>Intro</span></li>
+                <li id="song-verse-1"><span>Verse 1</span></li>
                 <li>Chorus</li>
                 <li>Verse 2</li>
                 <li>Chorus</li>
@@ -181,6 +235,8 @@
           triggerDirection: 'both',
           disabled: true,
           onTrigger: (scrollPos) => {
+            const songSectionEl = document.getElementById('song-intro');
+            songSectionEl.classList.add("pending");
             if (
               musicIntroManager.sounds.find((sound) => sound === sequence.sound)
             ) {
@@ -201,6 +257,8 @@
         {
           triggerDirection: 'both-reversed',
           onTrigger: (scrollPos) => {
+            const songSectionEl = document.getElementById('song-intro');
+            songSectionEl.classList.remove("pending");
             if (
               musicIntroManager.sounds.find((sound) => sound === sequence.sound)
             ) {
@@ -229,6 +287,11 @@
           triggerDirection: 'both',
           disabled: true,
           onTrigger: (scrollPos) => {
+
+            // ADD WAITING CLASS TO MENU
+            const songSectionEl = document.getElementById('song-verse-1');
+            songSectionEl.classList.add("pending");
+
             if (
               musicVerse1Manager.sounds.find(
                 (sound) => sound === sequence.sound
@@ -251,6 +314,8 @@
         {
           triggerDirection: 'both-reversed',
           onTrigger: (scrollPos) => {
+            const songSectionEl = document.getElementById('song-verse-1');
+            songSectionEl.classList.remove("pending");
             if (
               musicVerse1Manager.sounds.find(
                 (sound) => sound === sequence.sound
@@ -395,6 +460,11 @@
           startChorus1.trigger();
           currentIntervalMultiplier = CHORUS1_INTERVAL;
         }
+
+        const dog1Element = document.getElementById('dog-01');
+        dog1Element.style.display = 'none';
+        const dog2Element = document.getElementById('dog-02');
+        dog2Element.style.display = 'block';
 
         // parallaxController.initAudio();
       };
