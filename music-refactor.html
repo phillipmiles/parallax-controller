@@ -4,9 +4,12 @@
   <head>
     <title>Parallax</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <link href="css/style-music.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="build/parallax.js"></script>
   </head>
@@ -24,83 +27,111 @@
                 src="./assets/images/dog-01-body-01.svg"
                 class="dog-01-body-01"
               />
-              <img
-                src="./assets/images/dog-01-head-01.svg"
-                class="dog-01-head-01"
-              />
-              <img
-                src="./assets/images/dog-01-mouth-01.svg"
-                class="dog-01-mouth-01"
-              />
-              <img
-              src="./assets/images/dog-01-eye-left-02.svg"
-              class="dog-01-eye-left-02"
-            />
-            <img
-              src="./assets/images/dog-01-eye-right-02.svg"
-              class="dog-01-eye-right-02"
-            />
-              <img
-              src="./assets/images/dog-01-eye-left-01.svg"
-              class="dog-01-eye-left-01"
-            />
-            <img
-              src="./assets/images/dog-01-eye-right-01.svg"
-              class="dog-01-eye-right-01"
-            />
-            
-            <img
-              src="./assets/images/dog-01-eyebrow-left-01.svg"
-              class="dog-01-eyebrow-left-01"
-            />
-            <img
-              src="./assets/images/dog-01-eyebrow-right-01.svg"
-              class="dog-01-eyebrow-right-01"
-            />
-            <img
-              src="./assets/images/dog-01-iris-left-01.svg"
-              class="dog-01-iris-left-01"
-            />
-            <img
-              src="./assets/images/dog-01-iris-right-01.svg"
-              class="dog-01-iris-right-01"
-            />
+              <div class="dog-01-head-01-group">
+                <img
+                  src="./assets/images/dog-01-head-01.svg"
+                  class="dog-01-head-01"
+                />
+                <img
+                  src="./assets/images/dog-01-mouth-01.svg"
+                  class="dog-01-mouth-01"
+                />
+                <img
+                  src="./assets/images/dog-01-eye-left-02.svg"
+                  class="dog-01-eye-left-02"
+                />
+                <img
+                  src="./assets/images/dog-01-eye-right-02.svg"
+                  class="dog-01-eye-right-02"
+                />
+                <img
+                  src="./assets/images/dog-01-eye-left-01.svg"
+                  class="dog-01-eye-left-01"
+                />
+                <img
+                  src="./assets/images/dog-01-eye-right-01.svg"
+                  class="dog-01-eye-right-01"
+                />
+                <img
+                  src="./assets/images/dog-01-eyebrow-left-01.svg"
+                  class="dog-01-eyebrow-left-01"
+                />
+                <img
+                  src="./assets/images/dog-01-eyebrow-right-01.svg"
+                  class="dog-01-eyebrow-right-01"
+                />
+                <img
+                  src="./assets/images/dog-01-iris-left-01.svg"
+                  class="dog-01-iris-left-01"
+                />
+                <img
+                  src="./assets/images/dog-01-iris-right-01.svg"
+                  class="dog-01-iris-right-01"
+                />
+              </div>
             </div>
             <div id="dog-02" class="dog">
-              <img
-                src="./assets/images/dog-02-body-01.svg"
-                class="dog-02-body-01"
-              />
               <img
                 src="./assets/images/dog-02-legs-01.svg"
                 class="dog-02-legs-01"
               />
+              <div class="dog-02-body-01-group">
+                <img
+                  src="./assets/images/dog-02-tail-01.svg"
+                  class="dog-02-tail-01"
+                />
+                <img
+                  src="./assets/images/dog-02-body-01.svg"
+                  class="dog-02-body-01"
+                />
+                <div class="dog-02-head-01-group">
+                  <img
+                    src="./assets/images/dog-02-head-01.svg"
+                    class="dog-02-head-01"
+                  />
+                  <img
+                    src="./assets/images/dog-02-eyes-01.svg"
+                    class="dog-02-eyes-01"
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div class="song-container">
-            <h1>Song name</h1>
-            <h2>By artist</h2>
-            <div class="song-contents">
-              <div class="song-scrollbar">
-                <div class="song-scrollbar-indicator-wrap">
-                    <div class="song-scrollbar-indicator"></div>
-                </div>
+            <div>
+              <h1>Are You Ready?</h1>
+              <h2>By Castle Heist</h2>
+              <div id="start-container" class="start-container">
+                <button id="start-button" class="start-button">
+                  Start song
+                </button>
               </div>
-              <ul>
-                <li class="active"><span>Count in</span></li></li>
-                <li id="song-intro"><span>Intro</span></li>
-                <li id="song-verse-1"><span>Verse 1</span></li>
-                <li>Chorus</li>
-                <li>Verse 2</li>
-                <li>Chorus</li>
-                <li>Bridge</li>
-                <li>Chorus</li>
-                <li>Outro</li>
-              </ul>
+              <div id="song-container" class="song-contents hidden">
+                <div class="song-scrollbar">
+                  <div class="song-scrollbar-indicator-wrap">
+                    <div class="song-scrollbar-indicator"></div>
+                  </div>
+                </div>
+                <ul>
+                  <li class="active"><span>Count in</span></li>
+                  <li id="song-intro"><span>Intro</span></li>
+                  <li id="song-verse-1"><span>Verse 1</span></li>
+                  <li>Chorus</li>
+                  <li>Verse 2</li>
+                  <li>Chorus</li>
+                  <li>Bridge</li>
+                  <li>Chorus</li>
+                  <li>Outro</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-        <div class="scroll-reminder">Scroll to progress song</div>
+        <!-- <div class="footer">
+          <div id="scroll-reminder" class="scroll-reminder hidden">
+            Scroll to progress song
+          </div>
+        </div> -->
       </div>
     </div>
 
@@ -236,7 +267,7 @@
           disabled: true,
           onTrigger: (scrollPos) => {
             const songSectionEl = document.getElementById('song-intro');
-            songSectionEl.classList.add("pending");
+            songSectionEl.classList.add('pending');
             if (
               musicIntroManager.sounds.find((sound) => sound === sequence.sound)
             ) {
@@ -258,7 +289,7 @@
           triggerDirection: 'both-reversed',
           onTrigger: (scrollPos) => {
             const songSectionEl = document.getElementById('song-intro');
-            songSectionEl.classList.remove("pending");
+            songSectionEl.classList.remove('pending');
             if (
               musicIntroManager.sounds.find((sound) => sound === sequence.sound)
             ) {
@@ -287,10 +318,9 @@
           triggerDirection: 'both',
           disabled: true,
           onTrigger: (scrollPos) => {
-
             // ADD WAITING CLASS TO MENU
             const songSectionEl = document.getElementById('song-verse-1');
-            songSectionEl.classList.add("pending");
+            songSectionEl.classList.add('pending');
 
             if (
               musicVerse1Manager.sounds.find(
@@ -315,7 +345,7 @@
           triggerDirection: 'both-reversed',
           onTrigger: (scrollPos) => {
             const songSectionEl = document.getElementById('song-verse-1');
-            songSectionEl.classList.remove("pending");
+            songSectionEl.classList.remove('pending');
             if (
               musicVerse1Manager.sounds.find(
                 (sound) => sound === sequence.sound
@@ -408,8 +438,6 @@
       parallaxController.addAudio(musicVerse1Manager);
       parallaxController.addAudio(musicChorus1Manager);
 
-     
-
       const animScrollbar = new parallax.ParallaxAnimation(
         '.song-scrollbar-indicator-wrap',
         [
@@ -424,13 +452,16 @@
       );
 
       parallaxController.addAnimation(animScrollbar);
- 
-      
-
-      parallaxController.init();
 
       const turnOnAudio = async () => {
+        parallaxController.init();
         document.body.removeEventListener('click', turnOnAudio);
+
+        const startButton = document.getElementById('start-button');
+        startButton.style.opacity = '0.5';
+        startButton.innerHTML = 'loading..';
+        startButton.disabled = true;
+
         await musicCountIn.load();
         await musicIntro.load();
         await musicVerse1.load();
@@ -466,10 +497,20 @@
         const dog2Element = document.getElementById('dog-02');
         dog2Element.style.display = 'block';
 
+        const startContainer = document.getElementById('start-container');
+        startContainer.classList.add('hidden');
+
+        const songContainer = document.getElementById('song-container');
+        songContainer.classList.remove('hidden');
+
+        const scrollReminderEl = document.getElementById('scroll-reminder');
+        scrollReminderEl.classList.remove('hidden');
+
         // parallaxController.initAudio();
       };
 
-      document.body.addEventListener('click', turnOnAudio);
+      const startButton = document.getElementById('start-button');
+      startButton.addEventListener('click', turnOnAudio);
     </script>
   </body>
 </html>
