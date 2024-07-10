@@ -113,10 +113,12 @@
                   </div>
                 </div>
                 <ul>
-                  <li class="active"><span>Count in</span></li>
-                  <li id="song-intro"><span>Intro</span></li>
-                  <li id="song-verse-1"><span>Verse 1</span></li>
-                  <li>Chorus</li>
+                  <li id="section-count-in">
+                    <span>Count in</span>
+                  </li>
+                  <li id="section-intro"><span>Intro</span></li>
+                  <li id="section-verse-1"><span>Verse 1</span></li>
+                  <li id="section-chorus-1"><span>Chorus</span></li>
                   <li>Verse 2</li>
                   <li>Chorus</li>
                   <li>Bridge</li>
@@ -138,21 +140,25 @@
     <script>
       const songSections = [
         {
+          id: 'section-count-in',
           title: 'Count in',
           interval: 4,
           source: new parallax.AudioSource('assets/music/count-in.mp3'),
         },
         {
+          id: 'section-intro',
           title: 'Intro',
           interval: 8,
           source: new parallax.AudioSource('assets/music/intro-loop.mp3'),
         },
         {
+          id: 'section-verse-1',
           title: 'Verse 1',
           interval: 8,
           source: new parallax.AudioSource('assets/music/verse-1.mp3'),
         },
         {
+          id: 'section-chorus-1',
           title: 'Chorus 1',
           interval: 8,
           source: new parallax.AudioSource('assets/music/chorus-1-pre.mp3'),
@@ -212,6 +218,17 @@
 
       const onNextSequence = () => {
         currentIntervalMultiplier = queuedIntervalMultipler;
+        const activeSection = document.getElementsByClassName('active');
+
+        for (let element of activeSection) {
+          element.classList.remove('active');
+        }
+
+        const pendingSection = document.getElementsByClassName('pending');
+        for (let element of pendingSection) {
+          element.classList.remove('pending');
+          element.classList.add('active');
+        }
       };
 
       const sequence = new parallax.ParallaxAudioSequence(onNextSequence);
@@ -232,8 +249,11 @@
             triggerDirection: 'both',
             disabled: true,
             onTrigger: (scrollPos) => {
-              // const songSectionEl = document.getElementById('song-intro');
-              // songSectionEl.classList.add('pending');
+              const songSectionEl = document.getElementById(section.id);
+              if (!songSectionEl.classList.contains('active')) {
+                songSectionEl.classList.add('pending');
+              }
+
               if (
                 section.manager.sounds.find((sound) => sound === sequence.sound)
               ) {
@@ -279,8 +299,8 @@
           {
             triggerDirection: stopTriggerDirection,
             onTrigger: (scrollPos) => {
-              // const songSectionEl = document.getElementById('song-verse-1');
-              // songSectionEl.classList.remove('pending');
+              const songSectionEl = document.getElementById(section.id);
+              songSectionEl.classList.remove('pending');
               if (
                 section.manager.sounds.find((sound) => sound === sequence.sound)
               ) {
@@ -352,6 +372,15 @@
         songSections.forEach((section) => {
           section.startTrigger.disabled = false;
 
+          const sectionEl = document.getElementById(section.id);
+
+          const offsetTime = section.offset
+            ? BASE_INTERVAL * 1000 * section.offset
+            : 0;
+
+          sectionEl.style['animation-duration'] =
+            BASE_INTERVAL * 1000 * section.interval + 'ms';
+
           if (
             section.startTrigger.withinRange(
               parallaxController.scrollHistory[0]
@@ -359,6 +388,10 @@
           ) {
             section.startTrigger.trigger();
             currentIntervalMultiplier = section.interval;
+            sectionEl.classList.add('active');
+            sectionEl.classList.remove('pending');
+
+            console.log(sectionEl);
           }
         });
 

@@ -81,8 +81,10 @@ h2 {
 
 button.start-button {
   margin-left: 48px;
-  border: 3px solid var(--color-dark);
-  color: var(--color-dark);
+  /* border: 3px solid var(--color-dark);
+  color: var(--color-dark); */
+  border: 3px solid black;
+  color: black;
   padding: 16px 48px;
   /* border-radius: 100px; */
   font-size: 21px;
@@ -122,6 +124,7 @@ ul li {
 
 li.active {
   position: relative;
+  animation-duration: 2181ms;
   background-color: white;
 }
 
@@ -144,7 +147,8 @@ li.active:before {
   transform-origin: 0;
   transform: scaleX(0);
   animation-name: li-duration;
-  animation-duration: 2181ms;
+  /* animation-duration: 2181ms; */
+  animation-duration: inherit;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
