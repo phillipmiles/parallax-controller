@@ -2,6 +2,7 @@ import ParallaxAudioManager from './ParallaxAudioManager';
 
 class ParallaxAudioSequence {
   sound;
+  current: ParallaxAudioManager;
   queue: ParallaxAudioManager[] = [];
   timeStarted;
   onNext: Function;
@@ -14,16 +15,17 @@ class ParallaxAudioSequence {
     if (this.onNext) this.onNext();
     if (!this.queue[0]) {
       this.sound = undefined;
+      this.current = undefined;
       return;
     }
 
     const newSound = this.queue[0].createSound();
 
+    if (!newSound) return false;
+    this.current = this.queue[0];
+    this.sound = newSound;
     this.queue = this.queue.slice(1);
 
-    if (!newSound) return false;
-
-    this.sound = newSound;
     newSound.start(window.scrollY);
     this.timeStarted = performance.now();
     newSound.sourceNode.addEventListener('ended', this.ended);
@@ -40,6 +42,7 @@ class ParallaxAudioSequence {
     } else {
       const newSound = soundManager.createSound();
       this.sound = newSound;
+      this.current = soundManager;
 
       newSound.start(window.scrollY);
       this.timeStarted = performance.now();
@@ -52,8 +55,6 @@ class ParallaxAudioSequence {
     this.queue = this.queue
       .slice(0, queueIndex)
       .concat(this.queue.slice(queueIndex + 1));
-
-    console.log([...this.queue], queueIndex);
   };
 }
 

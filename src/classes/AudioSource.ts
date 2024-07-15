@@ -19,6 +19,7 @@ class AudioSource {
   load = async () => {
     this.context = new AudioContext();
     this.buffer = await this.getAudioFile(this.context, this.src);
+    console.log('LOADED!!!!');
     this.ready = true;
     this.onLoadCallbacks.forEach((func) => func());
   };
